@@ -1,0 +1,46 @@
+/*jQuery UI AutoComplete Style*/
+.custom-combobox {
+    position: relative;
+    display: inline-block;
+}
+.custom-combobox-toggle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin-left: -1px;
+    padding: 0;
+    height: 30px;
+    margin-top: 1px;
+    /**height:1.7em;*/
+    /**top:0.1em;*/
+}
+.custom-combobox-input {
+    margin: 0;
+    /*padding:4px 0.3em;*/
+    padding: 0 3px;
+    width: 400px;
+    /*height: 20px;*/
+    height: 30px;
+    line-height: 30px;
+}
+.custom-input-low {
+    height: 23px;
+    line-height: 23px;
+}
+.custom-toggle-low {
+    height: 23px;
+    margin-top: 5px;
+}
+.ui-widget {
+    font-size: 1em
+}
+.ui-autocomplete {
+    z-index: 9999;
+    max-height: 180px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 20px;
+}
+* html .ui-autocomplete {
+    height: 180px;
+}
