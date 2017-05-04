@@ -34,8 +34,8 @@ class KrOpLogPy:
         return item
 
     # get all OkrLog by kid
-    def allOkrLog(self, kid):
-        with PersistPool.okrPool.getconn() as conn:
+    def allOkrLog(self, conn, kid):
+        with conn:
             with conn.cursor() as cur:
                 cur.execute("SELECT * FROM " + self.tableName + " WHERE kid=%s order by createtime desc;", (kid,))
 
@@ -45,8 +45,8 @@ class KrOpLogPy:
                 return resultList
 
     # save okrLog info into database
-    def newOkrLog(self, okr):
-        with PersistPool.okrPool.getconn() as conn:
+    def newOkrLog(self, conn, okr):
+        with conn:
             with conn.cursor() as cur:
                 curtime = self.curTime()
                 cur.execute("INSERT INTO " + self.tableName

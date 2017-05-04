@@ -484,5 +484,10 @@ define(function (require, exports, module) {
         var reg = /^[\d\+\-]{7,22}$/;
         return this.optional(e) || reg.test(v);
     };
+    //计划用时
+    RE.prototype.isPlanTime = function (v, e, p) {
+        var reg = /^(\d+.\d{1,1}|\d+)$/;
+        return this.optional(e) || reg.test(v);
+    };
     module.exports = RE;
 });

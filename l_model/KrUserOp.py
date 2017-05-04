@@ -8,8 +8,8 @@ class KrUserOpPy:
     tableName = 'u_user'
 
     # get all users
-    def allUsers(self):
-        with PersistPool.okrPool.getconn() as conn:
+    def allUsers(self, conn):
+        with conn:
             with conn.cursor() as cur:
                 cur.execute("SELECT uid, uaccount, uname, groupids from " + self.tableName + " order by uid;")
                 resultList = []
@@ -23,8 +23,8 @@ class KrUserOpPy:
                 return resultList
 
     # get one user
-    def getUser(self, uid):
-        with PersistPool.okrPool.getconn() as conn:
+    def getUser(self, conn, uid):
+        with conn:
             with conn.cursor() as cur:
                 cur.execute("SELECT uid, uaccount, uname, groupids from " + self.tableName + " where uid=%s;", (uid,))
                 record = cur.fetchone()
@@ -36,8 +36,8 @@ class KrUserOpPy:
                 return item
 
     # save user into db
-    def newUser(self, userinfo):
-        with PersistPool.okrPool.getconn() as conn:
+    def newUser(self, conn, userinfo):
+        with conn:
             with conn.cursor() as cur:
                 cur.execute(
                     "INSERT INTO " + self.tableName + "(uaccount, uname, upasswd, groupids, createtime) values(%s, %s, %s, %s, %s);",
@@ -46,16 +46,16 @@ class KrUserOpPy:
         return
 
     # update an user info
-    def updateUser(self, userinfo):
-        with PersistPool.okrPool.getconn() as conn:
+    def updateUser(self, conn, userinfo):
+        with conn:
             with conn.cursor() as cur:
                 cur.execute("UPDATE " + self.tableName + " SET uname=%s, groupids=%s WHERE uid=%s;",
                             (userinfo['uname'], ",".join(userinfo['groupids']), userinfo['uid']))
                 return
 
     # user pwd validate
-    def checkUserPwd(self, account, passwd):
-        with PersistPool.okrPool.getconn() as conn:
+    def checkUserPwd(self, conn, account, passwd):
+        with conn:
             with conn.cursor() as cur:
                 cur.execute("SELECT * FROM " + self.tableName + " WHERE uaccount=%s and upasswd=%s;",
                             (account, self.transforPwd(passwd)))
@@ -70,8 +70,8 @@ class KrUserOpPy:
                 return resultList
 
     # modify pwd
-    def modifyUserPwd(self, uid, oldpasswd, newpasswd):
-        with PersistPool.okrPool.getconn() as conn:
+    def modifyUserPwd(self, conn, uid, oldpasswd, newpasswd):
+        with conn:
             with conn.cursor() as cur:
                 cur.execute("UPDATE " + self.tableName + " SET upasswd=%s WHERE uid=%s and upasswd=%s;",
                             (self.transforPwd(newpasswd), uid, self.transforPwd(oldpasswd)))

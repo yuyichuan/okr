@@ -47,7 +47,7 @@
         </header>
 
         <!--内容开始-->
-        <input type="hidden" name="dispatcher" id="dispatcher" value="accounts-list" data-urlDelete="" data-urlAfterDelete="" data-urlSearch="">
+        <input type="hidden" name="dispatcher" id="dispatcher" value="accounts-list" data-urlDelete="" data-urlAfterEdit="/users" data-urlSearch="">
         <div class="w1k middle m-t30">
         	<div class="cnt-title"><b>开户</b><button class="orange-btn f-r" id="addUser">新增开户</button></div>
             <!--<div class="table-top-seach"><input name="" type="text" class="f-l" placeholder="ID/姓名"><a href="javascript:;" id="searchBtn"></a></div>-->
@@ -67,8 +67,8 @@
                     	    <td class="frist-td">{{user['uid']}}</td>
                         	<td>{{user['uaccount']}}</td>
                             <td>{{user['uname']}}</td>
-                            <td>{{user['groupids']}}</td>
-                            <td><a href="javascript:;" class="modifyBtn" >修改</a><!--&nbsp;&nbsp;&nbsp;<a href="javascript:;" class="delBtn" >删除</a>--></td>
+                            <td gids="{{user['groupids']}}">{{user['groupnames']}}</td>
+                            <td><a href="javascript:;" class="editBtn" >修改</a><!--&nbsp;&nbsp;&nbsp;<a href="javascript:;" class="delBtn" >删除</a>--></td>
                         </tr>
                     % end
                     </tbody>
@@ -77,9 +77,9 @@
         </div>
         <div class="add-kh middle" style="display: none;" id="addUserDialog">
             <form action="/saveuser" method="post" id="addUserForm">
-            <input type="hidden" value="" name="uid"/>
+            <input type="hidden" value="" name="uid" id="uId"/>
                 <ul>
-                    <li><i><b>*</b>ID:</i><label><input name="uaccount" type="text" id="userId"></label></li>
+                    <li><i><b>*</b>ACCOUNT:</i><label><input name="uaccount" type="text" id="userId"></label></li>
                     <li><i><b>*</b>姓名:</i><label><input name="uname" type="text" id="userName"></label></li>
                     <li><i><b>*</b>用户组:</i>
                     % for group in viewmodel['groups']:

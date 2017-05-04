@@ -8,8 +8,8 @@ class KrUserRelationPy:
     tableName="okr_user"
 
     # get users by okrid
-    def getUser(self, krid):
-        with PersistPool.okrPool.getconn() as conn:
+    def getUser(self, conn, krid):
+        with conn:
             with conn.cursor() as cur:
                 cur.execute("SELECT a.uid, a.kid, b.uname FROM "+
                             self.tableName+" a left join "+
@@ -24,8 +24,8 @@ class KrUserRelationPy:
                 return resultList
 
     # save user okr relation
-    def saveUserOkr(self, krid, userIds):
-        with PersistPool.okrPool.getconn() as conn:
+    def saveUserOkr(self, conn, krid, userIds):
+        with conn:
             with conn.cursor() as cur:
                 cur.execute("DELETE FROM "+ self.tableName +" WHERE kid=%s;", (krid,))
                 for userId in userIds:

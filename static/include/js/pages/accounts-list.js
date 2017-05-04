@@ -10,11 +10,9 @@ define(function(require, exports, module) {
     //列表页 删除的url
     var delUrl = $dispatcher.attr('data-urlDelete');
     //删除后 刷新列表的url
-    var refreshUrl = $dispatcher.attr('data-urlAfterDelete');
+    var refreshUrl = $dispatcher.attr('data-urlAfterEdit');
     //搜素用户url
     var searchUrl=$dispatcher.attr('data-urlSearch');
-    //新开用户保存后url
-    var addUserUrl=$dispatcher.attr('data-urlAddUser');
     require('poshytip');
 
 
@@ -48,22 +46,56 @@ define(function(require, exports, module) {
                 }
             });
         },
+        doSave:function (tarForm,that) {
+            var formData, saveUrl;
+            saveUrl = tarForm.attr('action'), formData = tarForm.serialize();
+            $.ajax({
+                type: 'post',
+                url: saveUrl,
+                dataType: 'json',
+                data: formData,
+                success: function (d, s, xhr) {
+                    if (d.status === 0) {
+                        that.close();
+                        popWin.tinyAlert('恭喜您开户成功',1);
+                        location.href = refreshUrl;
+                    } else {
+                        popWin.alert(d.errorMsg || '操作失败');
+                    }
+                },
+                error: function (xhr, s, err) {
+                    return false;
+                }
+            });
+        },
         /*
         * 新增开户弹框
         * */
-        addUserDialog:function () {
+        addUserDialog:function (cur,data) {
           $.dialog({
               id:   'addUserDialog',
-              title:   '新增开户',
+              title:   data.title,
               padding:0,
               lock: true,
               content:$('#addUserDialog')[0],
               init:function () {
                     var that=this;
+                    if(data.isEdit){
+                        var uId=cur.closest('tr').attr('data-id');
+                        var curId=cur.closest('tr').find('td:eq(1)').html();
+                        var curName=cur.closest('tr').find('td:eq(2)').html();
+                        var curGroup=cur.closest('tr').find('td:eq(3)').attr('gids').split(',');
+                        $('#uId').val(uId);
+                        $('#userId').val(curId);
+                        $('#userName').val(curName);
+                        $.each(curGroup,function (i,v) {
+                            $('.group[value=' + v + ']').prop('checked',true);
+                        });
+                    }
                     $('.cancelBtn').on('click',function () {
                        that.close();
                     });
-                    $('#saveBtn').on('click',function () {
+                    $('#saveBtn').off('click').on('click',function () {
                         var userData=$('addUserForm').serialize();
                         if (!formValidator || !formValidator.form()) {
                             $('#addUserForm .error:first').focus();
@@ -73,16 +105,33 @@ define(function(require, exports, module) {
                             popWin.alert('请至少选择一个用户组');
                             return false;
                         }
-                        popWin.tinyAlert('恭喜您开户成功',1);
-                        that.close();
+                        if(data.isEdit){
+                            $.ajax({
+                                type: 'post',
+                                url: $('#addUserForm').attr('action'),
+                                dataType: 'json',
+                                data: $('#addUserForm').serialize(),
+                                success: function (d, s, xhr) {
+                                    if (d.status === 0) {
+                                        that.close();
+                                        popWin.tinyAlert('修改成功',1);
+                                        location.href = refreshUrl;
+                                    } else {
+                                        popWin.alert(d.errorMsg || '操作失败');
+                                    }
+                                },
+                                error: function (xhr, s, err) {
+                                    return false;
+                                }
+                            });
+                        }else {
+                            Main.doSave($('#addUserForm'),that);
+                        }
 
-                        $.get(addUserUrl,userData,function (re) {
-                            $('.table-div').find('table tbody').html(re);
-                        },'html');
                     });
-                    $('.group').on('click',function () {
-                        $(this).val(($(this).is(':checked'))?'true':'false');
-                    })
+//                    $('.group').on('click',function () {
+//                        $(this).val(($(this).is(':checked'))?'true':'false');
+//                    })
               }
           });
         },
@@ -99,7 +148,11 @@ define(function(require, exports, module) {
         * */
         initEvent:function () {
             $(document).on('click',"#addUser",function () {
-                Main.addUserDialog();
+                Main.addUserDialog($(this),
+                    {
+                        isEdit:false,
+                        title:'新增用户'
+                    });
             }).on('click','.delBtn',function () {
                 var me=$(this), $tr=me.closest('tr'),dataId='';
                 dataId=$tr.attr('data-id');
@@ -117,7 +170,13 @@ define(function(require, exports, module) {
             }).on('click','#searchBtn',function () {
                 var keyWord=$(this).prev().val();
                 Main.searchUser(keyWord);
-            })
+            }).on('click','.editBtn',function () {
+                Main.addUserDialog($(this),
+                    {
+                        isEdit:true,
+                        title:'修改用户信息'
+                    })
+            });
 
         },
         /*

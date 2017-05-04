@@ -77,6 +77,7 @@ define(function(require, exports, module) {
         $.validator.addMethod("medicine", function (v, e, p) {
             return this.optional(e) || v === $(e).siblings('.itemName').val();
         }, '');
+        $.validator.addMethod('isPlanTime', reExp.isPlanTime, '');
         // 汉化提示
         $.validator.messages={
             required: "请输入.",

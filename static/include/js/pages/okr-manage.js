@@ -10,6 +10,8 @@ define(function(require, exports, module) {
 
     //获得参与人员URL
     var getParticipanUrl=$dispatcher.attr('data-urlGetParticipan');
+    //搜索id/姓名获得人员的Url
+    var getSearchResultUrl=$dispatcher.attr('data-urlGetSearchResult');
     //保存O/KR后刷新的URL
     var afterSaveUrl=$dispatcher.attr('data-urlAfterSave');
     //列表页 删除的url
@@ -40,8 +42,10 @@ define(function(require, exports, module) {
             });
             $('#planTime').rules('add', {
                 required: true,
+                isPlanTime:'',
                 messages: {
-                    required: '请输入计划天数'
+                    required: '请输入计划天数',
+                    isPlanTime:'最多4位数，保留1位小数'
                 }
             });
             $('#goalLevel').rules('add', {
@@ -50,6 +54,7 @@ define(function(require, exports, module) {
                     required: '请选择难度'
                 }
             });
+
         },
         doSave:function (tarForm,that) {
             var formData, saveUrl;
@@ -101,8 +106,9 @@ define(function(require, exports, module) {
                 content:$('#newODialog')[0],
                 init:function () {
                     var that=this;
+                    var okrTr=$cur.closest('tr');
                     var curClass=$cur.attr('class');//新增的标识
-
+                    var okrCnt=okrTr.find('.krCnt div a').html();//O/KR的内容
                     if($cur.is('#addO')){
                         $('#krDes').hide();
                         //$('#krInput').find('i').html('<b>*</b>部门<b class="o-font">O</b>:<br/><em class="jishu">0/300</em>')
@@ -128,12 +134,13 @@ define(function(require, exports, module) {
                     //修改的代码
                     if(data.isEdit){
                         var curSign=$cur.attr('data-sign');//修改的标识
-                        var okrTr=$cur.closest('tr');
-                        var okrCnt=okrTr.find('.krCnt div a').html();//O/KR的内容
                         var okrTime=okrTr.find('.krTime').html();//计划用时
                         var okrLevel=okrTr.find('.krLevel').html();//难度
                         var okrPeople=okrTr.find('.krPeople').attr('peopleIds').split(',');//参与人员的数组
                         var okrMonth=okrTr.find('.krMonth').attr('monthIds').split(',');//已选择月份的数组
+                        if($cur.attr('parentId')){
+                            var subDes=$('#'+$cur.attr('parentId')).find('.krCnt div a').html();
+                        }
                         switch (curSign){
                             case 'editO':
                                 $('#krDes').hide();
@@ -141,16 +148,19 @@ define(function(require, exports, module) {
                                 break;
                             case 'editBranchKR':
                                 $('#krInput').find('i').html('<b>*</b>部门KR:<br/><em class="jishu">0/300</em>');
+                                $('#krDes').find('.okr-show').html(subDes);
                                 Main.editKr(okrCnt,okrTime,okrPeople,okrMonth,okrLevel);
                                 break;
                             case 'editItemKR':
                                 $('#krDes').find('i').html('部门KR:');
                                 $('#krInput').find('i').html('<b>*</b>项目KR:<br/><em class="jishu">0/300</em>');
+                                $('#krDes').find('.okr-show').html(subDes);
                                 Main.editKr(okrCnt,okrTime,okrPeople,okrMonth,okrLevel);
                                 break;
                             case 'editPersonKR':
                                 $('#krDes').find('i').html('项目KR:');
                                 $('#krInput').find('i').html('<b>*</b>个人KR:<br/><em class="jishu">0/300</em>');
+                                $('#krDes').find('.okr-show').html(subDes);
                                 Main.editKr(okrCnt,okrTime,okrPeople,okrMonth,okrLevel);
                                 break;
                             default:break;
@@ -197,7 +207,7 @@ define(function(require, exports, module) {
                     id:'participantDialog',
                     title:'选择人员',
                     padding:0,
-                    content:$('#participantDialog')[0],
+                    content:re,
                     init:function () {
                         var $that=this;
                         $('body').off('click', '.searchBtn,.showCheck').on('click', '.searchBtn,.showCheck', function() {
@@ -329,7 +339,7 @@ define(function(require, exports, module) {
                 return false;
             }).on('click','.delBtn',function () {
                 var me=$(this), $tr=me.closest('tr'),dataId='';
-                dataId=$tr.attr('data-id');
+                dataId=$tr.attr('id');
                 popWin.confirm('确定要删除?',function () {
                     Common.doDel({
                         url:delUrl,
@@ -347,7 +357,26 @@ define(function(require, exports, module) {
                         isEdit:true
                     });
                 return false;
-            });
+            }).on('click','.switchIcon',function () {
+                var me=$(this);
+                if(me.is('.clo-op-clo')){
+                    $('.'+me.attr('subClass')).show();
+                    me.removeClass('clo-op-clo').addClass('clo-op-op')
+                }else {
+                    $('.'+me.attr('subClass')).hide();
+                    me.removeClass('clo-op-op').addClass('clo-op-clo');
+                }
+            }).on('click','.showDetail',function () {
+                var detHtml=$(this).html();
+                $.dialog({
+                    title:'详细',
+                    content: '<div class="add-kh middle"><'
+                    +'p  class="okr-xx">'+detHtml+'</p> </div>',
+                    padding:0,
+                    fixed:true
+                })
+
+            })
         },
         /*
          * 初始化加载页面

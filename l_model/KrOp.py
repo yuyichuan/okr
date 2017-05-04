@@ -17,14 +17,14 @@ class KrOpPy:
         return time.strftime('%Y%m%d %H:%M:%S', time.localtime(time.time()))
 
     # construct okr by record
-    def constructOkr(self, row):
+    def constructOkr(self, conn, row):
         item = {}
         item['kid'] = row[0]
         item['klevel'] = row[1]
         item['pkid'] = row[2]
         item['kdesc'] = row[3]
-        item['planmonth'] = KrMonthPy().getMonth(item['kid'])
-        item['link_users'] = KrUserRelationPy().getUser(item['kid'])
+        item['planmonth'] = KrMonthPy().getMonth(conn, item['kid'])
+        item['link_users'] = KrUserRelationPy().getUser(conn, item['kid'])
         item['plandays'] = row[6]
         item['elevel'] = row[7]
         item['stime'] = row[8]
@@ -36,37 +36,37 @@ class KrOpPy:
         return item
 
     # get all Okr
-    def allOkr(self, klevel):
-        with PersistPool.okrPool.getconn() as conn:
+    def allOkr(self, conn, klevel):
+        with conn:
             with conn.cursor() as cur:
                 cur.execute("SELECT * FROM " + self.tableName + " WHERE klevel=%s;", (klevel,))
 
                 resultList = []
                 for row in cur:
-                    resultList.append(self.constructOkr(row))
+                    resultList.append(self.constructOkr(conn, row))
                 return resultList
 
     # get all sub Okr
-    def allSubOkr(self, pkids):
-        with PersistPool.okrPool.getconn() as conn:
+    def allSubOkr(self, conn, pkid):
+        with conn:
             with conn.cursor() as cur:
-                cur.execute("SELECT * FROM " + self.tableName + " WHERE pkid IN (%s) ORDER BY pkid, kid;", pkids)
+                cur.execute("SELECT * FROM " + self.tableName + " WHERE pkid=%s ORDER BY pkid, kid;", (pkid,))
 
                 resultList = []
                 for row in cur:
-                    resultList.append(self.constructOkr(row))
+                    resultList.append(self.constructOkr(conn, row))
                 return resultList
 
     # get one Okr
-    def getOkr(self, krid):
-        with PersistPool.okrPool.getconn() as conn:
+    def getOkr(self, conn, krid):
+        with conn:
             with conn.cursor() as cur:
                 cur.execute("SELECT * FROM " + self.tableName + " WHERE kid=%s;", (krid,))
-                return self.constructOkr(cur.fetchone())
+                return self.constructOkr(conn, cur.fetchone())
 
     # save okr info into database
-    def newOkr(self, okr):
-        with PersistPool.okrPool.getconn() as conn:
+    def newOkr(self, conn, okr):
+        with conn:
             with conn.cursor() as cur:
                 curtime = self.curTime()
                 cur.execute("SELECT NEXTVAL('okr_kid_seq')")
@@ -87,18 +87,18 @@ class KrOpPy:
                              curtime,
                              curtime,
                              okr['ouid']))
-                KrMonthPy().saveMonthsOkr(kid, okr['planmonth'].split(","))
-                KrUserRelationPy().saveUserOkr(kid, okr['link_users'].split(","))
+                KrMonthPy().saveMonthsOkr(conn, kid, okr['planmonth'].split(","))
+                KrUserRelationPy().saveUserOkr(conn, kid, okr['link_users'].split(","))
                 return kid
 
     # update okr info
-    def updateOkr(self, okr):
-        with PersistPool.okrPool.getconn() as conn:
+    def updateOkr(self, conn, okr):
+        with conn:
             with conn.cursor() as cur:
                 curtime = self.curTime()
 
                 # log info before modified
-                KrOpLogPy().newOkrLog(self.getOkr(okr['kid']))
+                KrOpLogPy().newOkrLog(conn, self.getOkr(okr['kid']))
 
                 # save the original okr info
                 cur.execute("UPDATE "+ self.tableName +" SET klevel=%s, pkid=%s, kdesc=%s, planmonth=%s, link_users=%s, plandays=%s, elevel=%s, stime=%s, etime=%s, status=%s, updatetime=%s, ouid=%s WHERE kid=%s;",

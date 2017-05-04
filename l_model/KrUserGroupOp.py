@@ -6,8 +6,8 @@ import PersistPool
 class KrUserGroupOpPy:
     table_name = "u_group"
 
-    def allGroups(self):
-        with PersistPool.okrPool.getconn() as conn:
+    def allGroups(self, conn):
+        with conn:
             with conn.cursor() as cur:
                 resultList = []
                 cur.execute("SELECT gid, gname from "+ self.table_name +" order by gid;")

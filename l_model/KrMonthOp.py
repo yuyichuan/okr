@@ -7,8 +7,8 @@ class KrMonthPy:
     tableName="okr_month"
 
     # get months by okrid
-    def getMonth(self, krid):
-        with PersistPool.okrPool.getconn() as conn:
+    def getMonth(self, conn, krid):
+        with conn:
             with conn.cursor() as cur:
                 cur.execute("SELECT kid, omonth FROM "+
                             self.tableName+" WHERE kid=%s;", (krid,))
@@ -18,8 +18,8 @@ class KrMonthPy:
                 return ",".join(resultList)
 
     # save months okr relation
-    def saveMonthsOkr(self, krid, omonths):
-        with PersistPool.okrPool.getconn() as conn:
+    def saveMonthsOkr(self, conn, krid, omonths):
+        with conn:
             with conn.cursor() as cur:
                 cur.execute("DELETE FROM "+ self.tableName +" WHERE kid=%s;", (krid,))
                 for omonth in omonths:

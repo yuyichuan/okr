@@ -8,6 +8,8 @@ from beaker.middleware import SessionMiddleware
 from OkrConfig import *
 from l_model.KrUserOp import KrUserOpPy
 from l_model.KrUserGroupOp import KrUserGroupOpPy
+from l_model.KrOp import KrOpPy
+from l_model import PersistPool
 
 # session
 session_opts = {
@@ -23,6 +25,10 @@ app = SessionMiddleware(bottle.app(), session_opts)
 DEPARTMENT='1'
 PROJECT='2'
 PERSON='3'
+
+O_DEPARTMENT_LEVEL=0
+O_PROJECT_LEVEL=1
+O_PERSON_LEVEL=2
 
 # static file definition
 @route('/<filename:path>')
@@ -63,7 +69,11 @@ def login():
     uname = request.forms.get('uname')
     upwd = request.forms.get('upwd')
 
-    users = KrUserOpPy().checkUserPwd(uname, upwd)
+    conn = PersistPool.okrPool.getconn()
+
+    users = KrUserOpPy().checkUserPwd(conn, uname, upwd)
+
+    PersistPool.okrPool.putconn(conn)
 
     if users and len(users) > 0:
         s['uid']=users[0]['uid']
@@ -107,6 +117,13 @@ def departmentokr():
         result['uproject'] = hasgroup(s['groupids'], PROJECT)
         result['uperson'] = hasgroup(s['groupids'], PERSON)
 
+        conn = PersistPool.okrPool.getconn()
+
+        result['okrs'] = getokrs(conn, O_DEPARTMENT_LEVEL)
+        result['users']=doubleUser(KrUserOpPy().allUsers(conn))
+
+        PersistPool.okrPool.putconn(conn)
+
         return template('departmentokr', viewmodel=result)
 
     redirect('/', code=302)
@@ -120,6 +137,13 @@ def projectokr():
         result['umage']=hasgroup(s['groupids'], DEPARTMENT)
         result['uproject'] = hasgroup(s['groupids'], PROJECT)
         result['uperson'] = hasgroup(s['groupids'], PERSON)
+
+        conn = PersistPool.okrPool.getconn()
+
+        result['okrs'] = getokrs(conn, O_PROJECT_LEVEL)
+        result['users'] = doubleUser(KrUserOpPy.allUsers(conn))
+
+        PersistPool.okrPool.putconn(conn)
 
         return template('projectokr', viewmodel=result)
 
@@ -135,6 +159,13 @@ def personokr():
         result['uproject'] = hasgroup(s['groupids'], PROJECT)
         result['uperson'] = hasgroup(s['groupids'], PERSON)
 
+        conn = PersistPool.okrPool.getconn()
+
+        result['okrs'] = getokrs(conn, O_PERSON_LEVEL)
+        result['users'] = doubleUser(KrUserOpPy.allUsers(conn))
+
+        PersistPool.okrPool.putconn(conn)
+
         return template('personokr', viewmodel=result)
 
     redirect('/', code=302)
@@ -149,36 +180,44 @@ def users():
         result['uproject'] = hasgroup(s['groupids'], PROJECT)
         result['uperson'] = hasgroup(s['groupids'], PERSON)
 
-        result['users']=KrUserOpPy().allUsers()
+        conn = PersistPool.okrPool.getconn()
+
+        result['users']=KrUserOpPy().allUsers(conn)
         for user in result['users']:
-            user['groupids'] = groupnames(user['groupids'])
+            user['groupnames'] = groupnames(user['groupids'])
 
-        result['groups']=KrUserGroupOpPy().allGroups()
+        result['groups']=KrUserGroupOpPy().allGroups(conn)
 
-
+        PersistPool.okrPool.putconn(conn)
 
         return template('users', viewmodel=result)
 
     redirect('/', code=302)
 
 
-@route('/saveuser')
+@route('/saveuser', method='POST')
 def newuser():
     s = bottle.request.environ.get('beaker.session')
     if s and s.has_key('uid') and s['uid'] > 0 and hasgroup(s['groupids'], DEPARTMENT):
+
         uid = request.forms.get('uid')
         userinfo = {}
         userinfo['uaccount'] = request.forms.get('uaccount')
         userinfo['uname'] = request.forms.get('uname')
         userinfo['upasswd']='888888'
-        userinfo['groupids']=request.forms.get('groupids')
+        userinfo['groupids']=request.forms.dict['groupids']
 
-        if uid > 0:
-            KrUserOpPy().updateUser(userinfo)
+        conn = PersistPool.okrPool.getconn()
+
+        if uid > '0':
+            userinfo['uid']=uid
+            KrUserOpPy().updateUser(conn, userinfo)
         else:
-            KrUserOpPy().newUser(userinfo)
+            KrUserOpPy().newUser(conn, userinfo)
 
-        redirect('/users', code=302)
+        PersistPool.okrPool.putconn(conn)
+
+        return '{"status":0}'
 
     redirect('/', code=302)
 
@@ -190,8 +229,8 @@ def hasgroup(groups, expectgroup):
             return True
     return False
 
-def groupnames(groupids):
-    groups = KrUserGroupOpPy().allGroups()
+def groupnames(conn, groupids):
+    groups = KrUserGroupOpPy().allGroups(conn)
     gids = groupids.split(',')
     gnams=[]
     for gid in gids:
@@ -201,6 +240,39 @@ def groupnames(groupids):
                 break;
 
     return ','.join(gnams)
+
+
+def doubleUser(allusers):
+    allusersRet = []
+    while len(allusers)>0:
+        userdouble = []
+        user1 = allusers.pop()
+        user2 = allusers.pop()
+        if user1:
+            userdouble.append(user1)
+        if user2:
+            userdouble.append(user2)
+
+        allusersRet.append(userdouble)
+
+    return allusersRet
+
+def formatlinkusers(okrlist):
+    for okr in okrlist:
+        okr['link_user_ids'] = reduce(lambda x, y: (x + str(y['uid'])) if (x == "") else(x + "," + str(y['uid'])),okr['link_users'], "")
+        okr['link_user_names'] = reduce(lambda x, y: (x + str(y['uname'])) if (x == "") else(x + "," + str(y['uname'])), okr['link_users'], "")
+
+def getokrs(conn, okrlevel):
+    okrs = KrOpPy().allOkr(conn, okrlevel)
+    formatlinkusers(okrs)
+
+    for okr in okrs:
+        subokrs = KrOpPy().allSubOkr(conn, okr['kid'])
+        formatlinkusers(subokrs)
+        okr['krs'] = subokrs
+
+    return okrs
+
 
 if __name__ == '__main__':
     logging.config.fileConfig(LOG_CONFIG)
