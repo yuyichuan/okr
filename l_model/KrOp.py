@@ -36,10 +36,13 @@ class KrOpPy:
         return item
 
     # get all Okr
-    def allOkr(self, conn, klevel):
+    def allOkr(self, conn, klevel, uid):
         with conn:
             with conn.cursor() as cur:
-                cur.execute("SELECT * FROM " + self.tableName + " WHERE klevel=%s;", (klevel,))
+                if uid > 0:
+                    cur.execute("SELECT a.* FROM "+ self.tableName + " a JOIN okr_user b on a.kid=b.kid WHERE a.klevel=%s and b.uid = %s;", (klevel, uid))
+                else:
+                    cur.execute("SELECT * FROM " + self.tableName + " WHERE klevel=%s;", (klevel,))
 
                 resultList = []
                 for row in cur:

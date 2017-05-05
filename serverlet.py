@@ -29,6 +29,7 @@ PERSON='3'
 O_DEPARTMENT_LEVEL=0
 O_PROJECT_LEVEL=1
 O_PERSON_LEVEL=2
+O_PERSON_KR_LEVEL=3
 
 # static file definition
 @route('/<filename:path>')
@@ -116,10 +117,11 @@ def departmentokr():
         result['umage']=hasgroup(s['groupids'], DEPARTMENT)
         result['uproject'] = hasgroup(s['groupids'], PROJECT)
         result['uperson'] = hasgroup(s['groupids'], PERSON)
+        result['curid'] = s['uid']
 
         conn = PersistPool.okrPool.getconn()
 
-        result['okrs'] = getokrs(conn, O_DEPARTMENT_LEVEL)
+        result['okrs'] = getokrs(conn, O_DEPARTMENT_LEVEL, 0)
         allusers = KrUserOpPy().allUsers(conn)
         result['userscount']=len(allusers)
         result['users']=doubleUser(allusers)
@@ -129,7 +131,7 @@ def departmentokr():
 
         PersistPool.okrPool.putconn(conn)
 
-        return template('departmentokr', viewmodel=result)
+        return template('okr', viewmodel=result)
 
     redirect('/', code=302)
 
@@ -142,11 +144,18 @@ def projectokr():
         result['umage']=hasgroup(s['groupids'], DEPARTMENT)
         result['uproject'] = hasgroup(s['groupids'], PROJECT)
         result['uperson'] = hasgroup(s['groupids'], PERSON)
+        result['curid'] = s['uid']
 
         conn = PersistPool.okrPool.getconn()
 
-        result['okrs'] = getokrs(conn, O_PROJECT_LEVEL)
-        result['users'] = doubleUser(KrUserOpPy.allUsers(conn))
+        result['okrs'] = getokrs(conn, O_PROJECT_LEVEL, s['uid'])
+        allusers = KrUserOpPy().allUsers(conn)
+        result['userscount'] = len(allusers)
+        result['users'] = doubleUser(allusers)
+
+        result['krtype'] = PROJECT
+        result['kolevel'] = O_PROJECT_LEVEL
+        result['krlevel'] = O_PERSON_LEVEL
 
         PersistPool.okrPool.putconn(conn)
 
@@ -163,11 +172,19 @@ def personokr():
         result['umage']=hasgroup(s['groupids'], DEPARTMENT)
         result['uproject'] = hasgroup(s['groupids'], PROJECT)
         result['uperson'] = hasgroup(s['groupids'], PERSON)
+        result['curid'] = s['uid']
 
         conn = PersistPool.okrPool.getconn()
 
-        result['okrs'] = getokrs(conn, O_PERSON_LEVEL)
-        result['users'] = doubleUser(KrUserOpPy().allUsers(conn))
+        result['okrs'] = getokrs(conn, O_PERSON_LEVEL, s['uid'])
+        allusers = []
+        allusers.append(KrUserOpPy().getUser(conn, s['uid']))
+        result['userscount'] = len(allusers)
+        result['users'] = doubleUser(allusers)
+
+        result['krtype'] = PERSON
+        result['kolevel'] = O_PERSON_LEVEL
+        result['krlevel'] = O_PERSON_KR_LEVEL
 
         PersistPool.okrPool.putconn(conn)
 
@@ -197,9 +214,15 @@ def saveoke():
         okr['pkid'] = request.forms.get('pkid')
         okr['kdesc'] = request.forms.get('kdesc')
         okr['planmonth'] = request.forms.get('planmonth')
-        okr['link_users'] = request.forms.get('link_users')
+
+        if krtype == '3' and okr['klevel'] == O_PERSON_KR_LEVEL:
+            okr['link_users'] = s['uid']
+            okr['elevel'] = KrOpPy().getOkr(conn, okr['pkid'])['elevel']
+        else:
+            okr['link_users'] = request.forms.get('link_users')
+            okr['elevel'] = request.forms.get('elevel')
+
         okr['plandays'] = request.forms.get('plandays')
-        okr['elevel'] = request.forms.get('elevel')
         okr['status'] = '-1'
         okr['ouid'] = s['uid']
 
@@ -319,8 +342,8 @@ def formatlinkusers(okrlist):
         okr['link_user_ids'] = reduce(lambda x, y: (x + str(y['uid'])) if (x == "") else(x + "," + str(y['uid'])),okr['link_users'], "")
         okr['link_user_names'] = reduce(lambda x, y: (x + str(y['uname'])) if (x == "") else(x + "," + str(y['uname'])), okr['link_users'], "")
 
-def getokrs(conn, okrlevel):
-    okrs = KrOpPy().allOkr(conn, okrlevel)
+def getokrs(conn, okrlevel, uid):
+    okrs = KrOpPy().allOkr(conn, okrlevel, uid)
     formatlinkusers(okrs)
 
     for okr in okrs:

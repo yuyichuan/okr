@@ -5,8 +5,10 @@ LOG_CONFIG='logging.conf'
 
 # data base config
 DB_NAME='okr'
-DB_HOST='10.1.10.215'
-DB_PORT='1233'
+#DB_HOST='10.1.10.215'
+#DB_PORT='1233'
+DB_HOST='localhost'
+DB_PORT='5432'
 DB_USER='postgres'
 DB_PWD='postgres123'
 

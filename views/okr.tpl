@@ -33,7 +33,7 @@
             <nav>
             	<div class="w1k middle">
             	    %if viewmodel['umage']:
-                	<span class="text-c right-brd"><a href="" class='now nav'>部门OKR管理</a></span>
+            	    <span class="text-c right-brd"><a href="/departmentokr" class='now nav'>部门OKR管理</a></span>
                 	%end
                 	%if viewmodel['uproject']:
                 	<span class="text-c right-brd"><a href="/projectokr" class='nav'>项目OKR管理</a></span>
@@ -61,7 +61,7 @@
                         <th width="40%">部门KR</th>
                         <th width="12%">参与人员</th>
                         <th width="8%">计划月份</th>
-                        <th width="6%">用时(天)</th>
+                        <th width="6%">计划人日</th>
                         <th width="4%">难度</th>
                         <th width="10%">操作</th>
                     </thead>
@@ -69,18 +69,22 @@
                     % for depto in viewmodel['okrs']:
                     	<tr id="{{depto['kid']}}">
                     	    <td>{{depto['kid']}}</td>
-                        	<td colspan="2" class="krCnt"><a href="javascript:;" class="switchIcon clo-op-clo f-l" subClass="{{depto['kid']}}"></a><div class="text-hidden w1120"><a href="javascript:;" class="showDetail">{{depto['kdesc']}}</a></div></td>
+                        	<td colspan="2" class="krCnt"><a href="javascript:;" class="switchIcon clo-op-clo f-l" subClass="{{depto['kid']}}"></a><div class="text-hidden w180"><a href="javascript:;" class="showDetail">{{depto['kdesc']}}</a></div></td>
                             <td class="krPeople" peopleIds="{{depto['link_user_ids']}}"><div class="text-hidden w180"><a href="#">{{depto['link_user_names']}}</a></div></td>
                             <td class="krMonth" monthIds="{{depto['planmonth']}}"><div class="text-hidden w120"><a href="#">{{depto['planmonth']}}</a></div></td>
                             <td class="krTime">{{depto['plandays']}}</td>
                             <td class="krLevel">{{str(depto['elevel'])}}</td>
-                            <td><a href="javascript:;" class="m-r10 editO" data-sign="editO" klevel="{{viewmodel['kolevel']}}" pkid="{{depto['pkid']}}">修改</a><a href="javascript:;" class="m-r10 delBtn">删除</a><a href="javascript:;" class="addKR" title="新增KR" klevel="{{viewmodel['krlevel']}}" pkid="{{depto['kid']}}">新增KR</a></td>
+                            <td>
+                            %if viewmodel['curid']== depto['ouid']:
+                            <a href="javascript:;" class="m-r10 editO" data-sign="editO" klevel="{{viewmodel['kolevel']}}" pkid="{{depto['pkid']}}">修改</a><a href="javascript:;" class="m-r10 delBtn">删除</a>
+                            % end
+                            <a href="javascript:;" class="addKR" title="新增KR" klevel="{{viewmodel['krlevel']}}" pkid="{{depto['kid']}}">新增KR</a></td>
                         </tr>
                         % for deptkr in depto['krs']:
                         <tr id="{{deptkr['kid']}}" class="{{depto['kid']}}" style="display: none;" parentId="{{deptkr['pkid']}}">
                         	<td></td>
                         	<td>{{deptkr['kid']}}</td>
-                            <td class="krCnt"><div class="text-hidden w910"><a href="javascript:;" class="showDetail">{{deptkr['kdesc']}}</a></div></td>
+                            <td class="krCnt"><div class="text-hidden w120"><a href="javascript:;" class="showDetail">{{deptkr['kdesc']}}</a></div></td>
                             <td class="krPeople" peopleIds="{{deptkr['link_user_ids']}}"><div class="text-hidden w180"><a href="#">{{deptkr['link_user_names']}}</a></div></td>
                             <td class="krMonth" monthIds="{{deptkr['planmonth']}}"><div class="text-hidden w120"><a href="#">{{deptkr['planmonth']}}</a></div></td>
                             <td class="krTime">{{deptkr['plandays']}}</td>
@@ -108,7 +112,7 @@
                     <label class="m-r20"><input name="planmontht" type="checkbox" value="{{i}}" class="chkMonth">{{i}}月</label>
                     % end
                     </div></li>
-                    <li><i><b>*</b>计划用时:</i><label><input name="plandays" type="text" id="planTime">&nbsp;天</label></li>
+                    <li><i><b>*</b>计划人日:</i><label><input name="plandays" type="text" id="planTime">&nbsp;天</label></li>
                     <li><i><b>*</b>难度:</i><label><select name="elevel" id="goalLevel">
                         <option value="">请选择</option>
                         <option value="2">2</option>
