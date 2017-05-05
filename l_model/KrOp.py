@@ -72,7 +72,7 @@ class KrOpPy:
                 cur.execute("SELECT NEXTVAL('okr_kid_seq')")
                 kid = cur.fetchone()[0]
                 cur.execute("INSERT INTO " + self.tableName
-                            + "(kid, klevel,pkid,kdesc,planmonth,link_users,plandays,elevel,stime,etime,status,createtime,updatetime,ouid) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+                            + "(kid, klevel,pkid,kdesc,planmonth,link_users,plandays,elevel,status,createtime,updatetime,ouid) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
                             (kid,
                              okr['klevel'],
                              okr['pkid'],
@@ -81,8 +81,6 @@ class KrOpPy:
                              okr['link_users'],
                              okr['plandays'],
                              okr['elevel'],
-                             okr['stime'],
-                             okr['etime'],
                              okr['status'],
                              curtime,
                              curtime,
@@ -98,23 +96,33 @@ class KrOpPy:
                 curtime = self.curTime()
 
                 # log info before modified
-                KrOpLogPy().newOkrLog(conn, self.getOkr(okr['kid']))
+                KrOpLogPy().newOkrLog(conn, self.getOkr(conn, okr['kid']))
 
                 # save the original okr info
-                cur.execute("UPDATE "+ self.tableName +" SET klevel=%s, pkid=%s, kdesc=%s, planmonth=%s, link_users=%s, plandays=%s, elevel=%s, stime=%s, etime=%s, status=%s, updatetime=%s, ouid=%s WHERE kid=%s;",
+                cur.execute("UPDATE "+ self.tableName +" SET klevel=%s, pkid=%s, kdesc=%s, planmonth=%s, link_users=%s, plandays=%s, elevel=%s, updatetime=%s, ouid=%s WHERE kid=%s;",
                             (okr['klevel'],
                              okr['pkid'],
                              okr['kdesc'],
                              okr['planmonth'],
-                             reduce(lambda x,y:(x + str(y['uid'])) if(x=="") else (x+","+str(y['uid'])), okr['link_users'], ""),
+                             okr['link_users'],
                              okr['plandays'],
                              okr['elevel'],
-                             okr['stime'],
-                             okr['etime'],
-                             okr['status'],
                              curtime,
                              okr['ouid'],
-                             kid))
+                             okr['kid']))
+
+    # delete okr
+    def delOkr(self, conn, okrid):
+        with conn:
+            with conn.cursor() as cur:
+                 # log info before modified
+                KrOpLogPy().newOkrLog(conn, self.getOkr(conn, okrid))
+
+                KrUserRelationPy().delUserOkr(conn, okrid)
+                KrMonthPy().delMonthsOkr(conn, okrid)
+
+                # delete the okr info
+                cur.execute("delete from "+ self.tableName +" WHERE kid=%s;",(okrid,))
 
 # for test
 if __name__ == '__main__':

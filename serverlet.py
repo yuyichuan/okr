@@ -120,7 +120,12 @@ def departmentokr():
         conn = PersistPool.okrPool.getconn()
 
         result['okrs'] = getokrs(conn, O_DEPARTMENT_LEVEL)
-        result['users']=doubleUser(KrUserOpPy().allUsers(conn))
+        allusers = KrUserOpPy().allUsers(conn)
+        result['userscount']=len(allusers)
+        result['users']=doubleUser(allusers)
+        result['krtype']=DEPARTMENT
+        result['kolevel'] = O_DEPARTMENT_LEVEL
+        result['krlevel'] = O_PROJECT_LEVEL
 
         PersistPool.okrPool.putconn(conn)
 
@@ -162,13 +167,65 @@ def personokr():
         conn = PersistPool.okrPool.getconn()
 
         result['okrs'] = getokrs(conn, O_PERSON_LEVEL)
-        result['users'] = doubleUser(KrUserOpPy.allUsers(conn))
+        result['users'] = doubleUser(KrUserOpPy().allUsers(conn))
 
         PersistPool.okrPool.putconn(conn)
 
         return template('personokr', viewmodel=result)
 
     redirect('/', code=302)
+
+@route('/saveokr', method='POST')
+def saveoke():
+    s = bottle.request.environ.get('beaker.session')
+    if s and s.has_key('uid') and s['uid'] > 0 :
+        krtype = request.forms.get('krtype')
+        isNoprev = True
+        if krtype == '1' and hasgroup(s['groupids'], DEPARTMENT):
+            isNoprev = False
+        elif krtype == '2' and hasgroup(s['groupids'], PROJECT):
+            isNoprev = False
+        elif krtype == '3' and hasgroup(s['groupids'], PERSON):
+            isNoprev = False
+
+        if isNoprev:
+            return '{"status":0,"errorMsg":"no permission!"}'
+
+        conn = PersistPool.okrPool.getconn()
+        okr={}
+        okr['klevel'] = request.forms.get('klevel')
+        okr['pkid'] = request.forms.get('pkid')
+        okr['kdesc'] = request.forms.get('kdesc')
+        okr['planmonth'] = request.forms.get('planmonth')
+        okr['link_users'] = request.forms.get('link_users')
+        okr['plandays'] = request.forms.get('plandays')
+        okr['elevel'] = request.forms.get('elevel')
+        okr['status'] = '-1'
+        okr['ouid'] = s['uid']
+
+        kid = request.forms.get('kid')
+        if kid > '0':
+            okr['kid']=kid
+            KrOpPy().updateOkr(conn, okr)
+        else:
+            KrOpPy().newOkr(conn, okr)
+        PersistPool.okrPool.putconn(conn)
+
+        return '{"status":0}'
+
+    redirect('/', code=302)
+
+@route('/delokr', method='POST')
+def delork():
+    s = bottle.request.environ.get('beaker.session')
+    if s and s.has_key('uid') and s['uid'] > 0:
+        kid = request.forms.get('krid')
+        conn = PersistPool.okrPool.getconn()
+        KrOpPy().delOkr(conn, kid)
+        PersistPool.okrPool.putconn(conn)
+        return '{"status":0}'
+
+    return '{"status":0,"errorMsg":"no permission!"}'
 
 @route('/users')
 def users():
@@ -184,7 +241,7 @@ def users():
 
         result['users']=KrUserOpPy().allUsers(conn)
         for user in result['users']:
-            user['groupnames'] = groupnames(user['groupids'])
+            user['groupnames'] = groupnames(conn, user['groupids'])
 
         result['groups']=KrUserGroupOpPy().allGroups(conn)
 
@@ -247,10 +304,10 @@ def doubleUser(allusers):
     while len(allusers)>0:
         userdouble = []
         user1 = allusers.pop()
-        user2 = allusers.pop()
-        if user1:
-            userdouble.append(user1)
-        if user2:
+        userdouble.append(user1)
+
+        if len(allusers) > 0:
+            user2 = allusers.pop()
             userdouble.append(user2)
 
         allusersRet.append(userdouble)

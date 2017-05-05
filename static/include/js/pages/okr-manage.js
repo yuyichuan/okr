@@ -8,12 +8,10 @@ define(function(require, exports, module) {
     var Dialog = require('dialog'),popWin = new Dialog ();
     var Common=require('Common');
 
-    //获得参与人员URL
-    var getParticipanUrl=$dispatcher.attr('data-urlGetParticipan');
-    //搜索id/姓名获得人员的Url
-    var getSearchResultUrl=$dispatcher.attr('data-urlGetSearchResult');
+
     //保存O/KR后刷新的URL
     var afterSaveUrl=$dispatcher.attr('data-urlAfterSave');
+
     //列表页 删除的url
     var delUrl = $dispatcher.attr('data-urlDelete');
 
@@ -52,9 +50,20 @@ define(function(require, exports, module) {
                 required: true,
                 messages: {
                     required: '请选择难度'
+                    }
+                });
+             $('.chkMonth').rules('add',{
+                required: function(){
+                     if($('.chkMonth').length>0 && !$('#checkedMonths').val()){
+                        return true;
+                     }else{
+                        return false;
+                     }
+                },
+                messages: {
+                    required: '请选择jihuayuefen'
                 }
             });
-
         },
         doSave:function (tarForm,that) {
             var formData, saveUrl;
@@ -66,19 +75,36 @@ define(function(require, exports, module) {
                 data: formData,
                 success: function (d, s, xhr) {
                     if (d.status === 0) {
-                        that.close();
-                        location.href = afterSaveUrl;
+                         popWin.tinyAlert('保存成功！', 1);
+                        setTimeout(function () {
+                            location.href = afterSaveUrl;
+                        },1500);
                     } else {
                         popWin.alert(d.errorMsg || '操作失败');
                     }
                 },
                 error: function (xhr, s, err) {
+                    popWin.alert('操作失败');
                     return false;
                 }
             });
         },
+
+        clearKr:function(){
+            $('#checkedIds').val('');
+            $('#okrGoal').val('');
+            $('#planTime').val('');
+            $('#participant').val('');
+            $('#checkedIds').val('');
+            $('.checkItem').prop('checked',false)
+            $('.chkMonth').prop('checked',false);
+            $('#goalLevel').find('option').prop('selected',false);
+            $('#kid').val('');
+        },
+
         //修改kr
-        editKr:function (okrCnt,okrTime,okrPeople,okrMonth,okrLevel) {
+        editKr:function (okrCnt,okrTime,okrPeople,okrMonth,okrLevel, okrid) {
+            $('#checkedIds').val(okrPeople)
             $('#okrGoal').val(okrCnt);
             $('#planTime').val(okrTime);
             $('#participant').val('已选择'+okrPeople.length+'人');
@@ -89,6 +115,7 @@ define(function(require, exports, module) {
                 $('.chkMonth[value=' + v + ']').prop('checked',true);
             });
             $('#goalLevel').find('option[value=' + okrLevel + ']').prop('selected',true);
+            $('#kid').val(okrid);
         },
         /*
          * 新增开户弹框
@@ -100,36 +127,28 @@ define(function(require, exports, module) {
                 title:   $cur.attr('title'),
                 padding:0,
                 lock: true,
-                close:function () {
-                    $('#newODialog').html(dialogHtml);
-                },
                 content:$('#newODialog')[0],
                 init:function () {
+                    Main.clearKr();
                     var that=this;
                     var okrTr=$cur.closest('tr');
                     var curClass=$cur.attr('class');//新增的标识
                     var okrCnt=okrTr.find('.krCnt div a').html();//O/KR的内容
+
+                    var pkid=$cur.attr('pkid')
+                    $('#dpkid').val(pkid)
+                    var klevel=$cur.attr('klevel')
+                    $('#dklevel').val(klevel)
+
                     if($cur.is('#addO')){
                         $('#krDes').hide();
                         //$('#krInput').find('i').html('<b>*</b>部门<b class="o-font">O</b>:<br/><em class="jishu">0/300</em>')
                     }
-                    //新增
-                    switch (curClass){
-                        case 'addBranchKR':
-                            $('.okr-show').html(okrCnt);
-                            $('#krInput').find('i').html('<b>*</b>部门KR:<br/><em class="jishu">0/300</em>');
-                            break;
-                        case 'addItemKR':
-                            $('#krDes').find('i').html('部门KR:');
-                            $('.okr-show').html(okrCnt);
-                            $('#krInput').find('i').html('<b>*</b>项目KR:<br/><em class="jishu">0/300</em>');
-                            break;
-                        case 'addPersonKR':
-                            $('#krDes').find('i').html('项目KR:');
-                            $('.okr-show').html(okrCnt);
-                            $('#krInput').find('i').html('<b>*</b>个人KR:<br/><em class="jishu">0/300</em>');
-                            break;
-                        default:break;
+                    //新增KR
+                   if($cur.is('.addKR')){
+                       $('#krDes').show();
+                       $('.okr-show').html(okrCnt);
+                       $('#krInput').find('i').html('<b>*</b>KR:<br/><em class="jishu">0/300</em>');
                     }
                     //修改的代码
                     if(data.isEdit){
@@ -138,42 +157,32 @@ define(function(require, exports, module) {
                         var okrLevel=okrTr.find('.krLevel').html();//难度
                         var okrPeople=okrTr.find('.krPeople').attr('peopleIds').split(',');//参与人员的数组
                         var okrMonth=okrTr.find('.krMonth').attr('monthIds').split(',');//已选择月份的数组
+                        var krid = okrTr.attr('id');
+                        $('#checkedMonths').val(okrTr.find('.krMonth').attr('monthIds'));
                         if($cur.attr('parentId')){
                             var subDes=$('#'+$cur.attr('parentId')).find('.krCnt div a').html();
                         }
                         switch (curSign){
                             case 'editO':
                                 $('#krDes').hide();
-                                Main.editKr(okrCnt,okrTime,okrPeople,okrMonth,okrLevel);
+                                Main.editKr(okrCnt,okrTime,okrPeople,okrMonth,okrLevel, krid);
                                 break;
-                            case 'editBranchKR':
-                                $('#krInput').find('i').html('<b>*</b>部门KR:<br/><em class="jishu">0/300</em>');
+                            case 'editKR':
+                                $('#krInput').find('i').html('<b>*</b>KR:<br/><em class="jishu">0/300</em>');
                                 $('#krDes').find('.okr-show').html(subDes);
-                                Main.editKr(okrCnt,okrTime,okrPeople,okrMonth,okrLevel);
-                                break;
-                            case 'editItemKR':
-                                $('#krDes').find('i').html('部门KR:');
-                                $('#krInput').find('i').html('<b>*</b>项目KR:<br/><em class="jishu">0/300</em>');
-                                $('#krDes').find('.okr-show').html(subDes);
-                                Main.editKr(okrCnt,okrTime,okrPeople,okrMonth,okrLevel);
-                                break;
-                            case 'editPersonKR':
-                                $('#krDes').find('i').html('项目KR:');
-                                $('#krInput').find('i').html('<b>*</b>个人KR:<br/><em class="jishu">0/300</em>');
-                                $('#krDes').find('.okr-show').html(subDes);
-                                Main.editKr(okrCnt,okrTime,okrPeople,okrMonth,okrLevel);
+                                Main.editKr(okrCnt,okrTime,okrPeople,okrMonth,okrLevel, krid);
                                 break;
                             default:break;
                         }
                     }
-                    $('body').on('click','.chkMonth',function () {//选择月份
+                    $('body').off('click','.chkMonth').on('click','.chkMonth',function () {//选择月份
                         var me = $(this), isChecked = false, checkedVal = "", checkedIds = '';
                         isChecked = me.is(':checked'), checkedVal = me.val();
                         checkedIds = Main.getCheckedIds(isChecked, checkedVal,$('#checkedMonths'));
                         $('#checkedMonths').val(checkedIds);
-                    }).on('click','#participant',function () {
+                    }).off('click','#participant').on('click','#participant',function () {
                         Main.getParticipantDlg();
-                    }).on('click','.saveBtn',function () {
+                    }).off('click','.saveBtn').on('click','.saveBtn',function () {
                         if (!formValidator || !formValidator.form()) {
                             $('#okrForm .error:first').focus();
                             return false;
@@ -183,52 +192,65 @@ define(function(require, exports, module) {
                             $('#participant').addClass('error errorInput').focus();
                             return false;
                         }
-                        if($('.chkMonth').length>0 && !$('#checkedMonths').val()){
-                            popWin.alert('请至少选择一个计划月份');
-                            return false;
-                        }
                         Main.doSave($('#okrForm'),that);
                     });
                     $('#okrGoal').countTip(300,function (v) {
                         return v.length;
                     })
-                    $('.cancelBtn').on('click',function () {
+                    $('.cancelBtn').off('click').on('click',function () {
                         that.close();
                     });
                 }
             });
         },
         getParticipantDlg:function (customerIds) {
-            $.get(getParticipanUrl,{
-                participantIds:customerIds,
-                r : Math.random()
-            },function (re) {
                 $.dialog({
                     id:'participantDialog',
                     title:'选择人员',
                     padding:0,
-                    content:re,
+                    content:$('#participantDialog')[0],
+                    close:function(){
+                        var checkedIds=$('#checkedIds').val();
+                        var checkList;
+                        if(checkedIds){
+                            checkList=checkedIds.split(',');
+                            $('.checkItem').removeAttr('checked');
+                            $.each(checkList,function (i,v) {
+                                $('.checkItem[value=' + v + ']').prop('checked',true);
+                            })
+                        }else {
+                            $('.checkItem').removeAttr('checked');
+                        }
+                    },
                     init:function () {
                         var $that=this;
-                        $('body').off('click', '.searchBtn,.showCheck').on('click', '.searchBtn,.showCheck', function() {
-                            var checkedIds = '', isShowChecked = '', setType = '';
+                        $('#financialCheckedIds').val($('#checkedIds').val());
+                        Main.sumChecked();
+                        $('body').off('click', '.showCheck').on('click', '.showCheck', function() {
+                            var checkedIds = '', isShowChecked = '';
                             //‘仅显示已勾选项’是否选中，选中为true(checkbox的value值)，没有选中为空
                             isShowChecked = $('.showCheck:checked').val() || 'false';
                             //根据已勾选的账户id 向后台请求搜索结果
-                            Main.getSearchResult(isShowChecked, $('#financialCheckedIds').val());
+                            if(isShowChecked=='true'){
+                                $('input.checkItem').not(':checked').parent().hide();
+                            }else{
+                                $('input.checkItem').not(':checked').parent().show();
+                            }
+                        }).off('click','.searchBtn').on('click','.searchBtn',function () {
+                            var keyword=$('#searchInput').val();
                         });
 
                         //初始化判断全选状态
                         Main.checkAll();
                         //全选
-                        $(document).on('click', '#checkAll', function() {
+                        $(document).off('click','#checkAll').on('click', '#checkAll', function() {
                             //回填
                             Common.selectAll($('#checkAll'), $('.checkItem'));
                             //计算当前选中的checkbox数目并回填数值
                             Main.sumChecked();
                         });
 
-                        $(document).on('change', '.checkItem', function() {
+                        $(document).off('change', '.checkItem').on('change', '.checkItem', function() {
                             var me = $(this), isChecked = false, checkedVal = "", checkedIds = '';
                             isChecked = me.is(':checked'), checkedVal = me.val();
 
@@ -240,7 +262,7 @@ define(function(require, exports, module) {
                             Main.sumChecked();
                         });
                         //确认-
-                        $('body').on('click', '.sureBtn', function() {
+                        $('body').off('click', '.sureBtn').on('click', '.sureBtn', function() {
                             var checkedIds = '', checkedNum = 0;
                             //获取已勾选的项
                             checkedIds = $('#financialCheckedIds').val();
@@ -259,32 +281,13 @@ define(function(require, exports, module) {
                             return false;
                         });
                         //取消
-                        $('body').on('click', '.staffCancelBtn', function() {
+                        $('body').off('click', '.staffCancelBtn').on('click', '.staffCancelBtn', function() {
                             $that.close();
                         });
                     }
                 })
-            })
         },
-        /**
-         * 根据搜索条件 查询人员
-         * @return {void}
-         * @param {String:isShowChecked ‘仅显示选择项’的选中状态 }
-         * @param {String checkedIds:已选择账号id组成的字符串，用逗号分隔;}
-         */
-        getSearchResult : function(isShowChecked, checkedIds) {
-            $.get(getSearchResultUrl, {
-                checkedFinanceClass : isShowChecked,
-                financeClassIds : checkedIds,
-                r : Math.random()
-            }, function(re) {
-                //回填搜索条件
-                $('#participantDialog').html(re);
 
-                //初始化判断全选状态
-                Main.checkAll();
-            }, 'html');
-        },
         /**
          * 输出已勾选的项ids
          * @return {String:ids 已勾选的项id组成的字符串，以逗号分隔}
@@ -332,7 +335,7 @@ define(function(require, exports, module) {
          * 初始化事件
          * */
         initEvent:function () {
-            $(document).on('click',"#addO,.addBranchKR,.addItemKR,.addPersonKR",function (e) {
+            $(document).on('click',"#addO,.addKR",function (e) {
                 Main.addODialog($(this),{
                     isEdit:false
                 });
@@ -344,14 +347,14 @@ define(function(require, exports, module) {
                     Common.doDel({
                         url:delUrl,
                         data:{
-                            userId:dataId,
+                            krid:dataId,
                             r:Math.random()
                         },
                         afterUrl:afterSaveUrl
                     })
                 });
                 return false;
-            }).on('click',".editO,.editBranchKR,.editItemKR,.editPersonKR",function (e) {
+            }).on('click',".editO,.editKR",function (e) {
                 Main.addODialog($(this),
                     {
                         isEdit:true
@@ -385,6 +388,7 @@ define(function(require, exports, module) {
             Main.initEvent();
             Main.initValidate();
             Main.initValidRules();
+
         }
     }
     Main.initpage();

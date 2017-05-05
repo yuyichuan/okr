@@ -31,6 +31,10 @@ class KrUserRelationPy:
                 for userId in userIds:
                     cur.execute("INSERT INTO "+ self.tableName+"(kid, uid, createtime) values(%s, %s, %s)", (krid, userId, time.strftime('%Y%m%d %H:%M:%S', time.localtime(time.time()))))
 
+    def delUserOkr(self, conn, krid):
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute("DELETE FROM " + self.tableName + " WHERE kid=%s;", (krid,))
 # for test
 if __name__=='__main__':
     ur = KrUserRelationPy()

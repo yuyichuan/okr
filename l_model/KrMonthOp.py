@@ -25,6 +25,11 @@ class KrMonthPy:
                 for omonth in omonths:
                     cur.execute("INSERT INTO "+ self.tableName+"(kid, omonth, createtime) values(%s, %s, %s)", (krid, omonth, time.strftime('%Y%m%d %H:%M:%S', time.localtime(time.time()))))
 
+    def delMonthsOkr(self, conn, krid):
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute("DELETE FROM "+ self.tableName +" WHERE kid=%s;", (krid,))
+
 # for test
 if __name__=='__main__':
     mon = KrMonthPy()
