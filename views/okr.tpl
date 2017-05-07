@@ -69,7 +69,7 @@
                     % for depto in viewmodel['okrs']:
                     	<tr id="{{depto['kid']}}">
                     	    <td>{{depto['kid']}}</td>
-                        	<td colspan="2" class="krCnt"><a href="javascript:;" class="switchIcon clo-op-clo f-l" subClass="{{depto['kid']}}"></a><div class="text-hidden w180"><a href="javascript:;" class="showDetail">{{depto['kdesc']}}</a></div></td>
+                        	<td colspan="2" class="krCnt"><a href="javascript:;" class="switchIcon clo-op-op f-l" subClass="{{depto['kid']}}"></a><div class="text-hidden w180"><a href="javascript:;" class="showDetail">{{depto['kdesc']}}</a></div></td>
                             <td class="krPeople" peopleIds="{{depto['link_user_ids']}}"><div class="text-hidden w180"><a href="#">{{depto['link_user_names']}}</a></div></td>
                             <td class="krMonth" monthIds="{{depto['planmonth']}}"><div class="text-hidden w120"><a href="#">{{depto['planmonth']}}</a></div></td>
                             <td class="krTime">{{depto['plandays']}}</td>
@@ -81,7 +81,7 @@
                             <a href="javascript:;" class="addKR" title="新增KR" klevel="{{viewmodel['krlevel']}}" pkid="{{depto['kid']}}">新增KR</a></td>
                         </tr>
                         % for deptkr in depto['krs']:
-                        <tr id="{{deptkr['kid']}}" class="{{depto['kid']}}" style="display: none;" parentId="{{deptkr['pkid']}}">
+                        <tr id="{{deptkr['kid']}}" class="{{depto['kid']}}"  parentId="{{deptkr['pkid']}}">
                         	<td></td>
                         	<td>{{deptkr['kid']}}</td>
                             <td class="krCnt"><div class="text-hidden w120"><a href="javascript:;" class="showDetail">{{deptkr['kdesc']}}</a></div></td>
@@ -89,7 +89,14 @@
                             <td class="krMonth" monthIds="{{deptkr['planmonth']}}"><div class="text-hidden w120"><a href="#">{{deptkr['planmonth']}}</a></div></td>
                             <td class="krTime">{{deptkr['plandays']}}</td>
                             <td class="krLevel">{{str(deptkr['elevel'])}}</td>
-                            <td><a href="javascript:;" class="m-r10 editKR" data-sign="editKR" klevel="{{viewmodel['krlevel']}}" pkid="{{deptkr['pkid']}}">修改</a><a href="javascript:;" class="m-r10 delBtn">删除</a></td>
+                            <td>
+                            % if deptkr['status'] != 1:
+                            <a href="javascript:;" class="m-r10 editKR" data-sign="editKR" klevel="{{viewmodel['krlevel']}}" pkid="{{deptkr['pkid']}}">修改</a>
+                            % end
+                            % if deptkr['status'] == -1:
+                            <a href="javascript:;" class="m-r10 delBtn">删除</a>
+                            % end
+                            </td>
                         </tr>
                         % end
                     % end

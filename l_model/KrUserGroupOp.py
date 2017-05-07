@@ -1,7 +1,5 @@
 __author__ = 'yuyc'
 
-import PersistPool
-
 
 class KrUserGroupOpPy:
     table_name = "u_group"

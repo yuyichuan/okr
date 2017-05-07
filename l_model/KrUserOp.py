@@ -1,8 +1,6 @@
 __author__ = 'yuyc'
 
-import PersistPool
 import time
-
 
 class KrUserOpPy:
     tableName = 'u_user'
@@ -89,7 +87,7 @@ class KrUserOpPy:
 
 # for test
 if __name__ == '__main__':
-    conn = PersistPool.okrPool.getconn()
+    # conn = PersistPool.okrPool.getconn()
     urop = KrUserOpPy()
     groupids = ['1', '2']
     userinfo = {}
@@ -99,7 +97,7 @@ if __name__ == '__main__':
     userinfo['groupids'] = groupids
 
     # print urop.transforPwd('test@123')
-    print urop.newUser(conn, userinfo)
+    # print urop.newUser(conn, userinfo)
     #print urop.checkUserPwd(userinfo['uaccount'], userinfo['upasswd'])
     #print urop.checkUserPwd(userinfo['uaccount'], '123456')
     #print urop.modifyUserPwd(1, 'yycc@123$%', 'yuyctest@135')

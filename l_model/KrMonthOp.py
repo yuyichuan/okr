@@ -1,6 +1,5 @@
 __author__='yuyc'
 
-import PersistPool
 import time
 
 class KrMonthPy:

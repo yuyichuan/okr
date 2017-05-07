@@ -2,7 +2,6 @@
 
 __author__ = 'yuyc'
 
-import PersistPool
 import time
 from KrMonthOp import KrMonthPy
 from KrUserRelation import KrUserRelationPy
@@ -33,6 +32,7 @@ class KrOpPy:
         item['createtime'] = row[11]
         item['updatetime'] = row[12]
         item['ouid'] = row[13]
+        item['complement'] = row[14]
         return item
 
     # get all Okr
@@ -127,6 +127,40 @@ class KrOpPy:
                 # delete the okr info
                 cur.execute("delete from "+ self.tableName +" WHERE kid=%s;",(okrid,))
 
+    # start okr
+    def startOkr(self, conn, okrid):
+        with conn:
+            with conn.cursor() as cur:
+                curOkr = self.getOkr(conn, okrid)
+                # log info before modified
+                KrOpLogPy().newOkrLog(conn, curOkr)
+                curtime = self.curTime()
+                if curOkr['pkid'] != 0:
+                    self.startOkr(conn, curOkr['pkid'])
+
+                cur.execute("UPDATE " + self.tableName + " SET status=0, stime=%s, updatetime=%s where kid=%s and status=-1;", (curtime, curtime, okrid))
+
+    # complementOrk
+    def complementOkr(self, conn, okrid, complement):
+        with conn:
+            with conn.cursor() as cur:
+                # log info before modified
+                KrOpLogPy().newOkrLog(conn, self.getOkr(conn, okrid))
+                curtime = self.curTime()
+
+                status = 0
+                if complement > 10:
+                    complement = 10
+                if complement == 10:
+                    status = 1
+
+                if status == 0:
+                    cur.execute(
+                        "UPDATE " + self.tableName + " SET updatetime=%s, complement=%s WHERE kid=%s AND status=0;", (curtime, complement, okrid))
+                else:
+                    cur.execute(
+                        "UPDATE " + self.tableName + " SET status=1, etime=%s, updatetime=%s, complement=%s WHERE kid=%s AND status=0;",
+                        (curtime, curtime, complement, okrid))
 # for test
 if __name__ == '__main__':
     okrOp = KrOpPy()

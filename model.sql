@@ -63,6 +63,9 @@ COMMENT ON COLUMN public.okr.stime IS '实际开始时间';
 COMMENT ON COLUMN public.okr.etime IS '实际结束时间';
 COMMENT ON COLUMN public.okr.status IS '状态:-1未开始，0进行中， 1完成了';
 COMMENT ON COLUMN public.okr.ouid IS '最后操作者';
+ALTER TABLE okr
+  ADD COLUMN complement integer NOT NULL DEFAULT 0;
+COMMENT ON COLUMN public.okr.complement IS '完成度';
 
 -- okr log
 CREATE TABLE okr_log

@@ -250,6 +250,36 @@ def delork():
 
     return '{"status":0,"errorMsg":"no permission!"}'
 
+@route('/startokr', method='POST')
+def startokr():
+    s = bottle.request.environ.get('beaker.session')
+    conn = PersistPool.okrPool.getconn()
+    if s and s.has_key('uid') and s['uid'] > 0:
+        kid = request.forms.get('krid')
+        okr = KrOpPy().getOkr(conn, kid)
+        if okr['ouid'] == s['uid']:
+            KrOpPy().startOkr(conn, kid)
+            PersistPool.okrPool.putconn(conn)
+            return '{"status":0}'
+
+    PersistPool.okrPool.putconn(conn)
+    return '{"status":0,"errorMsg":"no permission!"}'
+
+def complementokr():
+    s = bottle.request.environ.get('beaker.session')
+    conn = PersistPool.okrPool.getconn()
+    if s and s.has_key('uid') and s['uid'] > 0:
+        kid = request.forms.get('krid')
+        okr = KrOpPy().getOkr(conn, kid)
+        if okr['ouid'] == s['uid']:
+            complement = request.forms.get('complement')
+            KrOpPy().complementOkr(conn, kid, complement)
+            PersistPool.okrPool.putconn(conn)
+        return '{"status":0}'
+
+    PersistPool.okrPool.putconn(conn)
+    return '{"status":0,"errorMsg":"no permission!"}'
+
 @route('/users')
 def users():
     s = bottle.request.environ.get('beaker.session')

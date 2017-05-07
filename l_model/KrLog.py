@@ -1,6 +1,5 @@
 __author__ = 'yuyc'
 
-import PersistPool
 import time
 from KrMonthOp import KrMonthPy
 from KrUserRelation import KrUserRelationPy
@@ -31,6 +30,7 @@ class KrOpLogPy:
         item['status'] = row[11]
         item['createtime'] = row[12]
         item['ouid'] = KrUserOpPy().getUser(row[13])
+        item['complement'] = row[14]
         return item
 
     # get all OkrLog by kid
@@ -50,7 +50,7 @@ class KrOpLogPy:
             with conn.cursor() as cur:
                 curtime = self.curTime()
                 cur.execute("INSERT INTO " + self.tableName
-                            + "(kid, klevel,pkid,kdesc,planmonth,link_users,plandays,elevel,stime,etime,status,createtime,ouid) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+                            + "(kid, klevel,pkid,kdesc,planmonth,link_users,plandays,elevel,stime,etime,status,createtime,ouid, complement) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
                             (okr['kid'],
                              okr['klevel'],
                              okr['pkid'],
@@ -63,7 +63,9 @@ class KrOpLogPy:
                              okr['etime'],
                              okr['status'],
                              curtime,
-                             okr['ouid']))
+                             okr['ouid']),
+                             okr['complement']
+                            )
                 return
 
 
