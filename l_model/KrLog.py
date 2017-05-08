@@ -63,8 +63,8 @@ class KrOpLogPy:
                              okr['etime'],
                              okr['status'],
                              curtime,
-                             okr['ouid']),
-                             okr['complement']
+                             okr['ouid'],
+                             okr['complement'])
                             )
                 return
 

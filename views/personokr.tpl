@@ -28,7 +28,7 @@
 		<header>
 			<div class="w1k middle header-top text-r">
 				<p class="f-l"></p>
-                <span>你好，<cite class="m-r10">{{viewmodel['uname']}}</cite><cite class="m-r10">|</cite><cite class="m-r10"><a href="#">修改密码</a></cite><cite class=" m-r10">|</cite><cite><a href="javascript:;" url="/logout" id="logoutBtn">退出</a></cite></span>
+                <span>你好，<cite class="m-r10">{{viewmodel['uname']}}</cite><cite class="m-r10">|</cite><cite class="m-r10"><a href="/chpwd">修改密码</a></cite><cite class=" m-r10">|</cite><cite><a href="javascript:;" url="/logout" id="logoutBtn">退出</a></cite></span>
 			</div>
             <nav>
             	<div class="w1k middle">
@@ -63,7 +63,7 @@
                         <th width="5%">计划月份</th>
                         <th width="5%">计划人日</th>
                         <th width="4%">难度</th>
-                        <th width="6%">完成度</th>
+                        <th width="6%">完成度(%)</th>
                         <th width="8%">开始日期</th>
                         <th width="10%">操作</th>
                     </thead>
@@ -93,7 +93,7 @@
                             <td class="krMonth" monthIds="{{deptkr['planmonth']}}"><div class="text-hidden w120"><a href="#">{{deptkr['planmonth']}}</a></div></td>
                             <td class="krTime">{{deptkr['plandays']}}</td>
                             <td class="krLevel">{{str(deptkr['elevel'])}}</td>
-                            <td></td>
+                            <td class="krComplete">{{deptkr['complement']}}</td>
                             <td></td>
                             <td>
                             % if deptkr['status'] != 1:
@@ -103,10 +103,10 @@
                             <a href="javascript:;" class="m-r10 delBtn">删除</a>
                             % end
                             % if deptkr['status'] == -1:
-                            <a href="javascript:;" class="m-r10 startBtn">开始</a>
+                            <a href="javascript:;" class="m-r10 startBtn" data-id="{{deptkr['kid']}}" data-url="/startokr" >开始</a>
                             % end
                             % if deptkr['status'] == 0:
-                            <a href="javascript:;" class="m-r10 complementBtn">完成度</a>
+                            <a href="javascript:;" class="m-r10 complementBtn" data-id="{{deptkr['kid']}}">完成度</a>
                             % end
                             </td>
                         </tr>
@@ -165,6 +165,23 @@
                 </div>
             </div>
             <span class="text-c"><input name="" type="button" class="gray-btn m-r20 staffCancelBtn" value="取消"></input><input name="" type="button" class="orange-btn sureBtn" value="确定"></input></span>
+        </div>
+        <div class="add-kh middle add-o" style="display: none;" id="newComplete">
+            <form id="completeForm" action="/complementokr" method="post">
+                <ul>
+                     <li><i><b>O</b>:</i><span class='okr-show'></span></li>
+                    <li><i><b>*</b>完成度:</i><label><select name="complete" id="complete">
+                        <option value="0">0%</option>
+                        <option value="30">30%</option>
+                        <option value="60">60%</option>
+                        <option value="75">75%</option>
+                        <option value="90">90%</option>
+                        <option value="10">100%</option>
+                    </select></label></li>
+                </ul>
+                <input type="hidden" name="krid" id="ccurId" value=""/>
+                <span class="text-c"><input name="" type="button" class="gray-btn m-r20 cancelBtn" value="取消"></input><input name="" type="button" class="orange-btn saveBtn" value="保存"></input></span>
+            </form>
         </div>
 		<!--内容结束-->
 

@@ -55,6 +55,7 @@ status bigint NOT NULL DEFAULT -1,
 createtime timestamp without time zone NOT NULL,
 updatetime timestamp without time zone NOT NULL,
 ouid bigint,
+complement integer NOT NULL DEFAULT 0,
 CONSTRAINT pk_kid PRIMARY KEY (kid)
 ) ;
 COMMENT ON COLUMN public.okr.plandays IS '计划用天数';
@@ -63,8 +64,6 @@ COMMENT ON COLUMN public.okr.stime IS '实际开始时间';
 COMMENT ON COLUMN public.okr.etime IS '实际结束时间';
 COMMENT ON COLUMN public.okr.status IS '状态:-1未开始，0进行中， 1完成了';
 COMMENT ON COLUMN public.okr.ouid IS '最后操作者';
-ALTER TABLE okr
-  ADD COLUMN complement integer NOT NULL DEFAULT 0;
 COMMENT ON COLUMN public.okr.complement IS '完成度';
 
 -- okr log
@@ -84,6 +83,7 @@ etime timestamp without time zone,
 status bigint NOT NULL DEFAULT -1,
 createtime timestamp without time zone NOT NULL,
 ouid bigint,
+complement integer NOT NULL,
 CONSTRAINT pk_klog_id PRIMARY KEY (k_logid)
 ) ;
 

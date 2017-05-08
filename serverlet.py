@@ -64,6 +64,37 @@ def index():
     result['errmsg']=''
     return template("login", viewmodel=result)
 
+@route('/chpwd')
+def showchpwd():
+    s = bottle.request.environ.get('beaker.session')
+    if s and s.has_key('uid') and s['uid'] > 0:
+        result={}
+        result['uname']=s['uname']
+        result['errmsg']=''
+
+        return template("changepwd", viewmodel=result)
+
+    redirect('/', code=302)
+
+@route('/chpwdp', method='POST')
+def chpwd():
+    s = bottle.request.environ.get('beaker.session')
+    if s and s.has_key('uid') and s['uid'] > 0:
+        result = {}
+        result['uname'] = s['uname']
+        result['errmsg'] = ''
+
+        conn = PersistPool.okrPool.getconn()
+        ok = KrUserOpPy().modifyUserPwd(conn, s['uid'], request.forms.get('oldupwd'), request.forms.get('newupwd'))
+        if ok:
+            result['errmsg'] = 'password is changed!'
+        else:
+            result['errmsg'] = 'failed to change password!'
+
+        return template("changepwd", viewmodel=result)
+
+    redirect('/', code=302)
+
 @route('/login', method='POST')
 def login():
     s = bottle.request.environ.get('beaker.session')
@@ -192,6 +223,39 @@ def personokr():
 
     redirect('/', code=302)
 
+@route('/startokr', method='POST')
+def startOkr():
+    s = bottle.request.environ.get('beaker.session')
+    if s and s.has_key('uid') and s['uid'] > 0:
+        krid = request.forms.get('curId')
+
+        conn = PersistPool.okrPool.getconn()
+        okr = KrOpPy().getOkr(conn, krid)
+        if okr['ouid'] == s['uid']:
+            KrOpPy().startOkr(conn, krid)
+
+        PersistPool.okrPool.putconn(conn)
+        return '{"status":0,"errorMsg":""}'
+
+    return '{"status":-1,"errorMsg":"start failed!"}'
+
+@route('/complementokr', method='POST')
+def complementOkr():
+    s = bottle.request.environ.get('beaker.session')
+    if s and s.has_key('uid') and s['uid'] > 0:
+        complement = request.forms.get('complete')
+
+        conn = PersistPool.okrPool.getconn()
+        okr = KrOpPy().getOkr(conn, krid)
+        if okr['ouid'] == s['uid']:
+            KrOpPy().startOkr(conn, krid)
+
+        PersistPool.okrPool.putconn(conn)
+        return '{"status":0,"errorMsg":""}'
+
+    return '{"status":-1,"errorMsg":"start failed!"}'
+
+
 @route('/saveokr', method='POST')
 def saveoke():
     s = bottle.request.environ.get('beaker.session')
@@ -206,7 +270,7 @@ def saveoke():
             isNoprev = False
 
         if isNoprev:
-            return '{"status":0,"errorMsg":"no permission!"}'
+            return '{"status":-1,"errorMsg":"no permission!"}'
 
         conn = PersistPool.okrPool.getconn()
         okr={}
@@ -248,7 +312,7 @@ def delork():
         PersistPool.okrPool.putconn(conn)
         return '{"status":0}'
 
-    return '{"status":0,"errorMsg":"no permission!"}'
+    return '{"status":-1,"errorMsg":"no permission!"}'
 
 @route('/startokr', method='POST')
 def startokr():
@@ -260,11 +324,12 @@ def startokr():
         if okr['ouid'] == s['uid']:
             KrOpPy().startOkr(conn, kid)
             PersistPool.okrPool.putconn(conn)
-            return '{"status":0}'
+            return '{"status":0,"errorMsg":""}'
 
     PersistPool.okrPool.putconn(conn)
-    return '{"status":0,"errorMsg":"no permission!"}'
+    return '{"status":-1,"errorMsg":"no permission!"}'
 
+@route('/complementokr', method='POST')
 def complementokr():
     s = bottle.request.environ.get('beaker.session')
     conn = PersistPool.okrPool.getconn()
@@ -272,13 +337,13 @@ def complementokr():
         kid = request.forms.get('krid')
         okr = KrOpPy().getOkr(conn, kid)
         if okr['ouid'] == s['uid']:
-            complement = request.forms.get('complement')
+            complement = request.forms.get('complete')
             KrOpPy().complementOkr(conn, kid, complement)
             PersistPool.okrPool.putconn(conn)
         return '{"status":0}'
 
     PersistPool.okrPool.putconn(conn)
-    return '{"status":0,"errorMsg":"no permission!"}'
+    return '{"status":-1,"errorMsg":"no permission!"}'
 
 @route('/users')
 def users():

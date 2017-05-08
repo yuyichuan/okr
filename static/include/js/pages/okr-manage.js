@@ -379,7 +379,56 @@ define(function(require, exports, module) {
                     fixed:true
                 })
 
-            })
+            }).on('click','.startBtn',function(){
+                var me=$(this);
+                var curId=me.attr('data-id');
+                $.ajax({
+                    type: 'post',
+                    dataType: 'json',
+                    url: me.attr('data-url'),
+                    data:{
+                        krid:curId,
+                        r:Math.random()
+                    },
+                    success: function (d, s, xhr) {
+                        if (d.status === 0) {
+                            popWin.tinyAlert('保存成功！', 1);
+                            setTimeout(function () {
+                                location.href = afterSaveUrl;
+                            },1500);
+                        } else {
+                            popWin.alert(d.errorMsg || '操作失败');
+                        }
+                    },
+                    error: function (xhr, s, err) {
+                        popWin.alert('操作失败');
+                        return false;
+                    }
+                   })
+            }).on('click','.complementBtn',function(){
+                    var me=$(this);
+                    var curId=me.attr('data-id');
+                    var krDetail=me.closest('tr').find('.showDetail').html();
+                    var krComplete=me.closest('tr').find('.krComplete').html();
+                    $.dialog({
+                        title:'wanchengdu',
+                        padding:0,
+                        content:$('#newComplete')[0],
+                        init:function(){
+                            var that=this;
+                            $('#ccurId').val(curId);
+                            $('#completeForm').find('.okr-show').html(krDetail);
+                            $('#complete').find('option[value='+krComplete+']').prop('selected',true);
+                            $('body').off('click','.cancelBtn').on('click','.cancelBtn',function(){
+                                that.close();
+                            }).off('click','.saveBtn').on('click','.saveBtn',function(){
+                                Main.doSave($('#completeForm'),that);
+                            });
+
+                        }
+                    })
+              });
+
         },
         /*
          * 初始化加载页面
@@ -390,7 +439,7 @@ define(function(require, exports, module) {
             Main.initValidRules();
 
         }
-    }
+}
     Main.initpage();
     function removeByValue(arr, val) {
         for (var i = 0; i < arr.length; i++) {

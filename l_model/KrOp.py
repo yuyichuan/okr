@@ -138,7 +138,7 @@ class KrOpPy:
                 if curOkr['pkid'] != 0:
                     self.startOkr(conn, curOkr['pkid'])
 
-                cur.execute("UPDATE " + self.tableName + " SET status=0, stime=%s, updatetime=%s where kid=%s and status=-1;", (curtime, curtime, okrid))
+                cur.execute("UPDATE " + self.tableName + " SET status=0, complement=0, stime=%s, updatetime=%s where kid=%s and status=-1;", (curtime, curtime, okrid))
 
     # complementOrk
     def complementOkr(self, conn, okrid, complement):
@@ -149,9 +149,9 @@ class KrOpPy:
                 curtime = self.curTime()
 
                 status = 0
-                if complement > 10:
-                    complement = 10
-                if complement == 10:
+                if int(complement) > 100:
+                    complement = 100
+                if int(complement) == 100:
                     status = 1
 
                 if status == 0:
