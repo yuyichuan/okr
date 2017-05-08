@@ -83,7 +83,7 @@
                     <li><i><b>*</b>姓名:</i><label><input name="uname" type="text" id="userName"></label></li>
                     <li><i><b>*</b>用户组:</i>
                     % for group in viewmodel['groups']:
-                    <label class="m-r20 "><input name="groupids" class="group" type="checkbox" value="{{group['gid']}}">{{group['gname']}}</label>
+                    <label class="m-r20 "><input name="groupids" class="group" type="checkbox" value="{{group['gid']}}" id="groupids">{{group['gname']}}</label>
                     % end
                     </li>
                 </ul>

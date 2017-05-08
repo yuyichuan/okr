@@ -79,6 +79,9 @@ define(function(require, exports, module) {
               lock: true,
               content:$('#addUserDialog')[0],
               init:function () {
+                    // clear
+                    $('#groupids').prop('checked',false)
+
                     var that=this;
                     if(data.isEdit){
                         var uId=cur.closest('tr').attr('data-id');

@@ -37,6 +37,7 @@ O_PERSON_KR_LEVEL=3
 def staticfiles(filename):
     return static_file(filename, root='./static')
 
+
 @route('/')
 @route('/index')
 def index():
@@ -53,6 +54,7 @@ def index():
     result['errmsg']=''
     return template("login", viewmodel=result)
 
+
 @route('/logout')
 def index():
     s = bottle.request.environ.get('beaker.session')
@@ -65,6 +67,7 @@ def index():
     result['errmsg']=''
     return template("login", viewmodel=result)
 
+
 @route('/chpwd')
 def showchpwd():
     s = bottle.request.environ.get('beaker.session')
@@ -76,6 +79,7 @@ def showchpwd():
         return template("changepwd", viewmodel=result)
 
     redirect('/', code=302)
+
 
 @route('/chpwdp', method='POST')
 def chpwd():
@@ -95,6 +99,7 @@ def chpwd():
         return template("changepwd", viewmodel=result)
 
     redirect('/', code=302)
+
 
 @route('/login', method='POST')
 def login():
@@ -124,6 +129,7 @@ def login():
     result['errmsg']="User name error or password error."
     return template("login", viewmodel=result)
 
+
 @route('/okr')
 def okr():
     s = bottle.request.environ.get('beaker.session')
@@ -139,6 +145,7 @@ def okr():
             redirect('/personokr', code=302)
 
     redirect('/', code=302)
+
 
 @route('/departmentokr')
 def departmentokr():
@@ -167,6 +174,7 @@ def departmentokr():
 
     redirect('/', code=302)
 
+
 @route('/projectokr')
 def projectokr():
     s = bottle.request.environ.get('beaker.session')
@@ -194,6 +202,7 @@ def projectokr():
         return template('projectokr', viewmodel=result)
 
     redirect('/', code=302)
+
 
 @route('/personokr')
 def personokr():
@@ -224,37 +233,38 @@ def personokr():
 
     redirect('/', code=302)
 
+
 @route('/startokr', method='POST')
-def startOkr():
+def startokr():
     s = bottle.request.environ.get('beaker.session')
+    conn = PersistPool.okrPool.getconn()
     if s and s.has_key('uid') and s['uid'] > 0:
-        krid = request.forms.get('curId')
-
-        conn = PersistPool.okrPool.getconn()
-        okr = KrOpPy().getOkr(conn, krid)
+        kid = request.forms.get('krid')
+        okr = KrOpPy().getOkr(conn, kid)
         if okr['ouid'] == s['uid']:
-            KrOpPy().startOkr(conn, krid)
+            KrOpPy().startOkr(conn, kid)
+            PersistPool.okrPool.putconn(conn)
+            return '{"status":0,"errorMsg":""}'
 
-        PersistPool.okrPool.putconn(conn)
-        return '{"status":0,"errorMsg":""}'
+    PersistPool.okrPool.putconn(conn)
+    return '{"status":-1,"errorMsg":"no permission!"}'
 
-    return '{"status":-1,"errorMsg":"start failed!"}'
 
 @route('/complementokr', method='POST')
-def complementOkr():
+def complementokr():
     s = bottle.request.environ.get('beaker.session')
+    conn = PersistPool.okrPool.getconn()
     if s and s.has_key('uid') and s['uid'] > 0:
-        complement = request.forms.get('complete')
-
-        conn = PersistPool.okrPool.getconn()
-        okr = KrOpPy().getOkr(conn, krid)
+        kid = request.forms.get('krid')
+        okr = KrOpPy().getOkr(conn, kid)
         if okr['ouid'] == s['uid']:
-            KrOpPy().startOkr(conn, krid)
+            complement = request.forms.get('complete')
+            KrOpPy().complementOkr(conn, kid, complement)
+            PersistPool.okrPool.putconn(conn)
+        return '{"status":0}'
 
-        PersistPool.okrPool.putconn(conn)
-        return '{"status":0,"errorMsg":""}'
-
-    return '{"status":-1,"errorMsg":"start failed!"}'
+    PersistPool.okrPool.putconn(conn)
+    return '{"status":-1,"errorMsg":"no permission!"}'
 
 
 @route('/saveokr', method='POST')
@@ -303,48 +313,22 @@ def saveoke():
 
     redirect('/', code=302)
 
+
 @route('/delokr', method='POST')
 def delork():
     s = bottle.request.environ.get('beaker.session')
     if s and s.has_key('uid') and s['uid'] > 0:
         kid = request.forms.get('krid')
         conn = PersistPool.okrPool.getconn()
-        KrOpPy().delOkr(conn, kid)
+        result = KrOpPy().delOkr(conn, kid)
         PersistPool.okrPool.putconn(conn)
-        return '{"status":0}'
+        if result:
+            return '{"status":0}'
+        else:
+            return '{"status":-1,"errorMsg":"failed to delete!" }'
 
     return '{"status":-1,"errorMsg":"no permission!"}'
 
-@route('/startokr', method='POST')
-def startokr():
-    s = bottle.request.environ.get('beaker.session')
-    conn = PersistPool.okrPool.getconn()
-    if s and s.has_key('uid') and s['uid'] > 0:
-        kid = request.forms.get('krid')
-        okr = KrOpPy().getOkr(conn, kid)
-        if okr['ouid'] == s['uid']:
-            KrOpPy().startOkr(conn, kid)
-            PersistPool.okrPool.putconn(conn)
-            return '{"status":0,"errorMsg":""}'
-
-    PersistPool.okrPool.putconn(conn)
-    return '{"status":-1,"errorMsg":"no permission!"}'
-
-@route('/complementokr', method='POST')
-def complementokr():
-    s = bottle.request.environ.get('beaker.session')
-    conn = PersistPool.okrPool.getconn()
-    if s and s.has_key('uid') and s['uid'] > 0:
-        kid = request.forms.get('krid')
-        okr = KrOpPy().getOkr(conn, kid)
-        if okr['ouid'] == s['uid']:
-            complement = request.forms.get('complete')
-            KrOpPy().complementOkr(conn, kid, complement)
-            PersistPool.okrPool.putconn(conn)
-        return '{"status":0}'
-
-    PersistPool.okrPool.putconn(conn)
-    return '{"status":-1,"errorMsg":"no permission!"}'
 
 @route('/users')
 def users():
@@ -405,6 +389,7 @@ def hasgroup(groups, expectgroup):
             return True
     return False
 
+
 def groupnames(conn, groupids):
     groups = KrUserGroupOpPy().allGroups(conn)
     gids = groupids.split(',')
@@ -433,10 +418,12 @@ def doubleUser(allusers):
 
     return allusersRet
 
+
 def formatlinkusers(okrlist):
     for okr in okrlist:
         okr['link_user_ids'] = reduce(lambda x, y: (x + str(y['uid'])) if (x == "") else(x + "," + str(y['uid'])),okr['link_users'], "")
         okr['link_user_names'] = reduce(lambda x, y: (x + str(y['uname'])) if (x == "") else(x + "," + str(y['uname'])), okr['link_users'], "")
+
 
 def getokrs(conn, okrlevel, uid):
     okrs = KrOpPy().allOkr(conn, okrlevel, uid)

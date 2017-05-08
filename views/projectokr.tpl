@@ -60,12 +60,12 @@
                     	<th width="5%">项目O</th>
                         <th width="30%">项目KR</th>
                         <th width="12%">参与人员</th>
-                        <th width="5%">计划月份</th>
-                        <th width="5%">计划人日</th>
+                        <th width="7%">计划月份</th>
+                        <th width="7%">计划人日</th>
                         <th width="4%">难度</th>
                         <th width="6%">完成度</th>
-                        <th width="8%">开始日期</th>
-                        <th width="10%">操作</th>
+                        <th width="11%">开始日期</th>
+                        <th width="13%">操作</th>
                     </thead>
                     <tbody>
                     % for depto in viewmodel['okrs']:
@@ -80,7 +80,10 @@
                             <td></td>
                             <td>
                             %if viewmodel['curid']== depto['ouid']:
-                            <a href="javascript:;" class="m-r10 editO" data-sign="editO" klevel="{{viewmodel['kolevel']}}" pkid="{{depto['pkid']}}">修改</a><a href="javascript:;" class="m-r10 delBtn">删除</a>
+                            <a href="javascript:;" class="m-r10 editO" data-sign="editO" klevel="{{viewmodel['kolevel']}}" pkid="{{depto['pkid']}}">修改</a>
+                                % if len(depto['krs']) == 0:
+                                    <a href="javascript:;" class="m-r10 delBtn">删除</a>
+                                % end
                             % end
                             <a href="javascript:;" class="addKR" title="新增KR" klevel="{{viewmodel['krlevel']}}" pkid="{{depto['kid']}}">新增KR</a></td>
                         </tr>

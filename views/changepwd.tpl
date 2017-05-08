@@ -18,7 +18,7 @@
                     <li><span>原密码</span><input name="oldupwd" type="password" class="password" /></li>
                     <li><span>新密码</span><input name="newupwd" type="password" class="password"  /></li>
                     <li class="orange-text">{{viewmodel['errmsg']}}</li>
-                    <li class="text-r"><input name="" type="submit" value="Change Pwd" class="orange-btn" /><a href="/">返回</></li>
+                    <li class="text-r"><input name="" type="submit" value="修改密码" class="orange-btn" /><a href="/">返回</></li>
                 </ul>
             </div>
         </div>

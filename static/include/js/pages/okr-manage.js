@@ -61,7 +61,7 @@ define(function(require, exports, module) {
                      }
                 },
                 messages: {
-                    required: '请选择jihuayuefen'
+                    required: '请选择计划月份'
                 }
             });
         },

@@ -118,14 +118,27 @@ class KrOpPy:
     def delOkr(self, conn, okrid):
         with conn:
             with conn.cursor() as cur:
-                 # log info before modified
-                KrOpLogPy().newOkrLog(conn, self.getOkr(conn, okrid))
 
-                KrUserRelationPy().delUserOkr(conn, okrid)
-                KrMonthPy().delMonthsOkr(conn, okrid)
+                # do not delete with sub okr
+                subs = self.allSubOkr(conn, okrid)
+                if len(subs) > 0:
+                    return False
 
-                # delete the okr info
-                cur.execute("delete from "+ self.tableName +" WHERE kid=%s;",(okrid,))
+                curOkr = self.getOkr(conn, okrid)
+                if curOkr['status'] == -1:
+                    # log info before modified
+                    KrOpLogPy().newOkrLog(conn, self.getOkr(conn, okrid))
+
+                    KrUserRelationPy().delUserOkr(conn, okrid)
+                    KrMonthPy().delMonthsOkr(conn, okrid)
+
+                    # delete the okr info
+                    cur.execute("delete from " + self.tableName + " WHERE kid=%s;", (okrid,))
+
+                    return True
+
+                return False
+
 
     # start okr
     def startOkr(self, conn, okrid):

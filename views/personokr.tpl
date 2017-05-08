@@ -51,7 +51,7 @@
         <!--内容开始-->
         <input type="hidden" name="dispatcher" id="dispatcher" value="okr-manage" data-urlAfterSave="/personokr" data-urlDelete="/delokr">
         <div class="middle m-t30 cnt-title">
-        	<div class="w1k middle"><b>OKR管理</b><button class="orange-btn f-r" id="addO" title="新增O" klevel="{{viewmodel['kolevel']}}" pkid="0">新增<b class="o-font">O</b></button></div>
+        	<div class="w1k middle"><b>OKR管理</b><!--<button class="orange-btn f-r" id="addO" title="新增O" klevel="{{viewmodel['kolevel']}}" pkid="0">新增<b class="o-font">O</b></button>--></div>
         </div>
             <div class="table-div okr-gl">
                 <table class="m-t15">
@@ -60,12 +60,12 @@
                     	<th width="5%">个人O</th>
                         <th width="30%">个人KR</th>
                         <th width="12%">参与人员</th>
-                        <th width="5%">计划月份</th>
-                        <th width="5%">计划人日</th>
+                        <th width="7%">计划月份</th>
+                        <th width="7%">计划人日</th>
                         <th width="4%">难度</th>
                         <th width="6%">完成度(%)</th>
-                        <th width="8%">开始日期</th>
-                        <th width="10%">操作</th>
+                        <th width="11%">开始日期</th>
+                        <th width="13%">操作</th>
                     </thead>
                     <tbody>
                     % for depto in viewmodel['okrs']:
@@ -80,7 +80,10 @@
                             <td></td>
                             <td>
                             %if viewmodel['curid']== depto['ouid']:
-                            <a href="javascript:;" class="m-r10 editO" data-sign="editO" klevel="{{viewmodel['kolevel']}}" pkid="{{depto['pkid']}}">修改</a><a href="javascript:;" class="m-r10 delBtn">删除</a>
+                            <a href="javascript:;" class="m-r10 editO" data-sign="editO" klevel="{{viewmodel['kolevel']}}" pkid="{{depto['pkid']}}">修改</a>
+                                % if len(depto['krs']) == 0:
+                                <a href="javascript:;" class="m-r10 delBtn">删除</a>
+                                % end
                             % end
                             <a href="javascript:;" class="addKR" title="新增KR" klevel="{{viewmodel['krlevel']}}" pkid="{{depto['kid']}}">新增KR</a></td>
                         </tr>
@@ -176,7 +179,7 @@
                         <option value="60">60%</option>
                         <option value="75">75%</option>
                         <option value="90">90%</option>
-                        <option value="10">100%</option>
+                        <option value="100">100%</option>
                     </select></label></li>
                 </ul>
                 <input type="hidden" name="krid" id="ccurId" value=""/>
