@@ -19,9 +19,11 @@ CREATE TABLE u_group
    CONSTRAINT pk_gid PRIMARY KEY (gid)
 ) ;
 
+
 insert into u_group(gname, createtime) values('部门', '2017-05-02');
 insert into u_group(gname, createtime) values('项目', '2017-05-02');
 insert into u_group(gname, createtime) values('个人', '2017-05-02');
+insert into u_group(gname, createtime) values('管理', '2017-05-02');
 
 --用户
 CREATE TABLE u_user

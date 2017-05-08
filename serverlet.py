@@ -25,6 +25,7 @@ app = SessionMiddleware(bottle.app(), session_opts)
 DEPARTMENT='1'
 PROJECT='2'
 PERSON='3'
+ADMIN='4'
 
 O_DEPARTMENT_LEVEL=0
 O_PROJECT_LEVEL=1
