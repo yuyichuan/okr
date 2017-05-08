@@ -101,6 +101,8 @@ class KrOpPy:
                 # log info before modified
                 KrOpLogPy().newOkrLog(conn, self.getOkr(conn, okr['kid']))
 
+                KrMonthPy().saveMonthsOkr(conn, okr['kid'], okr['planmonth'].split(","))
+
                 # save the original okr info
                 cur.execute("UPDATE "+ self.tableName +" SET klevel=%s, pkid=%s, kdesc=%s, planmonth=%s, link_users=%s, plandays=%s, elevel=%s, updatetime=%s, ouid=%s WHERE kid=%s;",
                             (okr['klevel'],
