@@ -63,7 +63,7 @@
                         <th width="7%">计划月份</th>
                         <th width="7%">计划人日</th>
                         <th width="4%">难度</th>
-                        <th width="6%">完成度</th>
+                        <th width="6%">完成度(%)</th>
                         <th width="11%">开始日期</th>
                         <th width="13%">操作</th>
                     </thead>
@@ -76,8 +76,12 @@
                             <td class="krMonth" monthIds="{{depto['planmonth']}}"><div class="text-hidden w120"><a href="#">{{depto['planmonth']}}</a></div></td>
                             <td class="krTime">{{depto['plandays']}}</td>
                             <td class="krLevel">{{str(depto['elevel'])}}</td>
-                            <td></td>
-                            <td></td>
+                            <td>{{depto['complement']}}</td>
+                            <td>
+                            % if depto['stime'] is not None:
+                                {{depto['stime']}}
+                            % end
+                            </td>
                             <td>
                             %if viewmodel['curid']== depto['ouid']:
                             <a href="javascript:;" class="m-r10 editO" data-sign="editO" klevel="{{viewmodel['kolevel']}}" pkid="{{depto['pkid']}}">修改</a>
@@ -96,8 +100,12 @@
                             <td class="krMonth" monthIds="{{deptkr['planmonth']}}"><div class="text-hidden w120"><a href="#">{{deptkr['planmonth']}}</a></div></td>
                             <td class="krTime">{{deptkr['plandays']}}</td>
                             <td class="krLevel">{{str(deptkr['elevel'])}}</td>
-                            <td></td>
-                            <td></td>
+                            <td class="krComplete">{{deptkr['complement']}}</td>
+                            <td>
+                             % if deptkr['stime'] is not None:
+                                {{deptkr['stime']}}
+                            % end
+                            </td>
                             <td>
                             % if deptkr['status'] != 1:
                             <a href="javascript:;" class="m-r10 editKR" data-sign="editKR" klevel="{{viewmodel['krlevel']}}" pkid="{{deptkr['pkid']}}">修改</a>

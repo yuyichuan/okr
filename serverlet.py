@@ -5,6 +5,7 @@ import logging
 import logging.config
 from bottle import *
 from beaker.middleware import SessionMiddleware
+from decimal import Decimal
 from OkrConfig import *
 from l_model.KrUserOp import KrUserOpPy
 from l_model.KrUserGroupOp import KrUserGroupOpPy
@@ -424,17 +425,43 @@ def formatlinkusers(okrlist):
         okr['link_user_ids'] = reduce(lambda x, y: (x + str(y['uid'])) if (x == "") else(x + "," + str(y['uid'])),okr['link_users'], "")
         okr['link_user_names'] = reduce(lambda x, y: (x + str(y['uname'])) if (x == "") else(x + "," + str(y['uname'])), okr['link_users'], "")
 
+    return
+
 
 def getokrs(conn, okrlevel, uid):
     okrs = KrOpPy().allOkr(conn, okrlevel, uid)
     formatlinkusers(okrs)
 
     for okr in okrs:
-        subokrs = KrOpPy().allSubOkr(conn, okr['kid'])
-        formatlinkusers(subokrs)
-        okr['krs'] = subokrs
+        getSubOkrs(conn, okr)
 
     return okrs
+
+
+# 1--------
+# 2--------
+#    3-----
+#    4-----
+#    5-----
+#       6--
+#       7--
+#         8
+#         9
+def getSubOkrs(conn, okr):
+    subokrs = KrOpPy().allSubOkr(conn, okr['kid'])
+    formatlinkusers(subokrs)
+    okr['krs'] = subokrs
+    if len(subokrs) > 0:
+        for subokr in subokrs:
+            getSubOkrs(conn, subokr)
+
+        stime=reduce(lambda x,y:(y['stime'] if (x is None or (y['stime'] is not None and y['stime'] < x)) else x), subokrs, None)
+        okr['stime'] = stime
+
+        complement=reduce(lambda x,y:{'plandays':x['plandays'] + y['plandays'], 'cmpdays':x['cmpdays'] + int(y['complement']) * y['plandays'] / 100 }, subokrs, {'plandays':Decimal('0.0'), 'cmpdays':Decimal('0.0')})
+        okr['plandays'] = complement['plandays']
+        okr['complement'] = int(complement['cmpdays'] * 100 / complement['plandays'])
+    return
 
 
 if __name__ == '__main__':
