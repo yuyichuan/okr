@@ -144,19 +144,43 @@ def okr():
             redirect('/projectokr', code=302)
         if hasgroup(s['groupids'], PERSON):
             redirect('/personokr', code=302)
+        if hasgroup(s['groupids'], ADMIN):
+            redirect('/showdepartmentokr', code=302)
 
     redirect('/', code=302)
 
+@route('/showdepartmentokr')
+def showdepartmentokr():
+    s = bottle.request.environ.get('beaker.session')
+    if s and s.has_key('uid') and s['uid'] > 0:
+        result = {}
+        initUserInfo(result, s)
+
+        result['curid'] = s['uid']
+
+        conn = PersistPool.okrPool.getconn()
+
+        result['okrs'] = getokrs(conn, O_DEPARTMENT_LEVEL, 0)
+        allusers = KrUserOpPy().allUsers(conn)
+        result['userscount'] = len(allusers)
+        result['users'] = doubleUser(allusers)
+        result['krtype'] = DEPARTMENT
+        result['kolevel'] = O_DEPARTMENT_LEVEL
+        result['krlevel'] = O_PROJECT_LEVEL
+
+        PersistPool.okrPool.putconn(conn)
+
+        return template('okrshow', viewmodel=result)
+
+    redirect('/', code=302)
 
 @route('/departmentokr')
 def departmentokr():
     s = bottle.request.environ.get('beaker.session')
     if s and s.has_key('uid') and s['uid'] > 0:
         result={}
-        result['uname']=s['uname']
-        result['umage']=hasgroup(s['groupids'], DEPARTMENT)
-        result['uproject'] = hasgroup(s['groupids'], PROJECT)
-        result['uperson'] = hasgroup(s['groupids'], PERSON)
+        initUserInfo(result, s)
+
         result['curid'] = s['uid']
 
         conn = PersistPool.okrPool.getconn()
@@ -181,10 +205,7 @@ def projectokr():
     s = bottle.request.environ.get('beaker.session')
     if s and s.has_key('uid') and s['uid'] > 0:
         result={}
-        result['uname']=s['uname']
-        result['umage']=hasgroup(s['groupids'], DEPARTMENT)
-        result['uproject'] = hasgroup(s['groupids'], PROJECT)
-        result['uperson'] = hasgroup(s['groupids'], PERSON)
+        initUserInfo(result, s)
         result['curid'] = s['uid']
 
         conn = PersistPool.okrPool.getconn()
@@ -210,10 +231,7 @@ def personokr():
     s = bottle.request.environ.get('beaker.session')
     if s and s.has_key('uid') and s['uid'] > 0:
         result={}
-        result['uname']=s['uname']
-        result['umage']=hasgroup(s['groupids'], DEPARTMENT)
-        result['uproject'] = hasgroup(s['groupids'], PROJECT)
-        result['uperson'] = hasgroup(s['groupids'], PERSON)
+        initUserInfo(result, s)
         result['curid'] = s['uid']
 
         conn = PersistPool.okrPool.getconn()
@@ -336,10 +354,7 @@ def users():
     s = bottle.request.environ.get('beaker.session')
     if s and s.has_key('uid') and s['uid'] > 0 and hasgroup(s['groupids'], DEPARTMENT):
         result = {}
-        result['uname'] = s['uname']
-        result['umage'] = hasgroup(s['groupids'], DEPARTMENT)
-        result['uproject'] = hasgroup(s['groupids'], PROJECT)
-        result['uperson'] = hasgroup(s['groupids'], PERSON)
+        initUserInfo(result, s)
 
         conn = PersistPool.okrPool.getconn()
 
@@ -461,6 +476,14 @@ def getSubOkrs(conn, okr):
         complement=reduce(lambda x,y:{'plandays':x['plandays'] + y['plandays'], 'cmpdays':x['cmpdays'] + int(y['complement']) * y['plandays'] / 100 }, subokrs, {'plandays':Decimal('0.0'), 'cmpdays':Decimal('0.0')})
         okr['plandays'] = complement['plandays']
         okr['complement'] = int(complement['cmpdays'] * 100 / complement['plandays'])
+    return
+
+def initUserInfo(result, s):
+    result['uname'] = s['uname']
+    result['umage'] = hasgroup(s['groupids'], DEPARTMENT)
+    result['uproject'] = hasgroup(s['groupids'], PROJECT)
+    result['uperson'] = hasgroup(s['groupids'], PERSON)
+    result['uadmin'] = hasgroup(s['groupids'], ADMIN)
     return
 
 

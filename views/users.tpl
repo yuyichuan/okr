@@ -39,8 +39,11 @@
                 	% if viewmodel['uperson']:
                 	<span class="text-c right-brd"><a href="/personokr" class='nav'>个人OKR管理</a></span>
                 	% end
+                	% if viewmodel['uadmin']:
+                	<span class="text-c"><a href="/showdepartmentokr" class="nav">部门OKR展示</a></span>
+                	% end
                 	% if viewmodel['umage']:
-                	<span class="text-c"><a href="" class="now nav">开户</a></span>
+                	<span class="text-c"><a href="/users" class="nav">用户管理</a></span>
                 	% end
                 </div>
             </nav>
@@ -48,9 +51,10 @@
 
         <!--内容开始-->
         <input type="hidden" name="dispatcher" id="dispatcher" value="accounts-list" data-urlDelete="" data-urlAfterEdit="/users" data-urlSearch="">
-        <div class="w1k middle m-t30">
-        	<div class="cnt-title"><b>开户</b><button class="orange-btn f-r" id="addUser">新增开户</button></div>
+        <div class="middle m-t30 cnt-title">
+        	<div class="w1k middle"><b>开户</b><button class="orange-btn f-r" id="addUser">新增开户</button></div>
             <!--<div class="table-top-seach"><input name="" type="text" class="f-l" placeholder="ID/姓名"><a href="javascript:;" id="searchBtn"></a></div>-->
+            </div>
             <div class="table-div">
             	<p></p>
                 <table class="m-t15 text-c">
