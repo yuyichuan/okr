@@ -458,9 +458,9 @@ def getokrs(conn, okrlevel, uid):
 #    3-----
 #    4-----
 #    5-----
-#       6--
+#       6-- plandays start here
 #       7--
-#         8
+#         8     complement start here
 #         9
 def getSubOkrs(conn, okr):
     subokrs = KrOpPy().allSubOkr(conn, okr['kid'])
@@ -474,7 +474,10 @@ def getSubOkrs(conn, okr):
         okr['stime'] = stime
 
         complement=reduce(lambda x,y:{'plandays':x['plandays'] + y['plandays'], 'cmpdays':x['cmpdays'] + int(y['complement']) * y['plandays'] / 100 }, subokrs, {'plandays':Decimal('0.0'), 'cmpdays':Decimal('0.0')})
-        okr['plandays'] = complement['plandays']
+
+        if int(okr['klevel']) < O_PERSON_LEVEL:
+            okr['plandays'] = complement['plandays']
+
         okr['complement'] = int(complement['cmpdays'] * 100 / complement['plandays'])
     return
 
