@@ -104,7 +104,7 @@
                             </td>
                         </tr>
                             % for deptkrr in deptkr['krs']:
-                        <tr id="{{deptkrr['kid']}}" class="{{deptkr['kid']}}"  parentId="{{deptkrr['pkid']}}">
+                        <tr id="{{deptkrr['kid']}}" class="{{depto['kid']}} {{deptkr['kid']}}"  parentId="{{deptkrr['pkid']}}">
                         	<td></td>
                         	<td></td>
                         	<td>{{deptkrr['kid']}}</td>
@@ -121,7 +121,7 @@
                             </td>
                         </tr>
                                 % for deptkrrr in deptkrr['krs']:
-                        <tr id="{{deptkrrr['kid']}}" class="{{deptkrr['kid']}}"  parentId="{{deptkrrr['pkid']}}">
+                        <tr id="{{deptkrrr['kid']}}" class="{{depto['kid']}} {{deptkr['kid']}} {{deptkrr['kid']}}"  parentId="{{deptkrrr['pkid']}}">
                         	<td></td>
                         	<td></td>
                         	<td></td>
