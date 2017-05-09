@@ -43,7 +43,7 @@
                 	<span class="text-c"><a href="/showdepartmentokr" class="nav">部门OKR展示</a></span>
                 	% end
                 	% if viewmodel['umage']:
-                	<span class="text-c"><a href="/users" class="nav">用户管理</a></span>
+                	<span class="text-c"><a href="/users" class="now nav">用户管理</a></span>
                 	% end
                 </div>
             </nav>
