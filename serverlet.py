@@ -145,14 +145,14 @@ def okr():
         if hasgroup(s['groupids'], PERSON):
             redirect('/personokr', code=302)
         if hasgroup(s['groupids'], ADMIN):
-            redirect('/showdepartmentokr', code=302)
+            redirect('/users', code=302)
 
     redirect('/', code=302)
 
 @route('/showdepartmentokr')
 def showdepartmentokr():
     s = bottle.request.environ.get('beaker.session')
-    if s and s.has_key('uid') and s['uid'] > 0:
+    if s and s.has_key('uid') and s['uid'] > 0 and hasgroup(s['groupids'], DEPARTMENT):
         result = {}
         initUserInfo(result, s)
 
@@ -177,7 +177,7 @@ def showdepartmentokr():
 @route('/departmentokr')
 def departmentokr():
     s = bottle.request.environ.get('beaker.session')
-    if s and s.has_key('uid') and s['uid'] > 0:
+    if s and s.has_key('uid') and s['uid'] > 0 and hasgroup(s['groupids'], DEPARTMENT):
         result={}
         initUserInfo(result, s)
 
@@ -203,7 +203,7 @@ def departmentokr():
 @route('/projectokr')
 def projectokr():
     s = bottle.request.environ.get('beaker.session')
-    if s and s.has_key('uid') and s['uid'] > 0:
+    if s and s.has_key('uid') and s['uid'] > 0 and hasgroup(s['groupids'], PROJECT):
         result={}
         initUserInfo(result, s)
         result['curid'] = s['uid']
@@ -229,7 +229,7 @@ def projectokr():
 @route('/personokr')
 def personokr():
     s = bottle.request.environ.get('beaker.session')
-    if s and s.has_key('uid') and s['uid'] > 0:
+    if s and s.has_key('uid') and s['uid'] > 0 and hasgroup(s['groupids'], PERSON):
         result={}
         initUserInfo(result, s)
         result['curid'] = s['uid']
@@ -352,7 +352,7 @@ def delork():
 @route('/users')
 def users():
     s = bottle.request.environ.get('beaker.session')
-    if s and s.has_key('uid') and s['uid'] > 0 and hasgroup(s['groupids'], DEPARTMENT):
+    if s and s.has_key('uid') and s['uid'] > 0 and hasgroup(s['groupids'], ADMIN):
         result = {}
         initUserInfo(result, s)
 
@@ -374,7 +374,7 @@ def users():
 @route('/saveuser', method='POST')
 def newuser():
     s = bottle.request.environ.get('beaker.session')
-    if s and s.has_key('uid') and s['uid'] > 0 and hasgroup(s['groupids'], DEPARTMENT):
+    if s and s.has_key('uid') and s['uid'] > 0 and hasgroup(s['groupids'], ADMIN):
 
         uid = request.forms.get('uid')
         userinfo = {}
