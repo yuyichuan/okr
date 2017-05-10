@@ -47,8 +47,8 @@ class KrUserOpPy:
     def updateUser(self, conn, userinfo):
         with conn:
             with conn.cursor() as cur:
-                cur.execute("UPDATE " + self.tableName + " SET uname=%s, groupids=%s WHERE uid=%s;",
-                            (userinfo['uname'], ",".join(userinfo['groupids']), userinfo['uid']))
+                cur.execute("UPDATE " + self.tableName + " SET uname=%s, groupids=%s, upasswd=%s WHERE uid=%s;",
+                            (userinfo['uname'], ",".join(userinfo['groupids']), self.transforPwd(userinfo['upasswd']), userinfo['uid']))
                 return
 
     # user pwd validate

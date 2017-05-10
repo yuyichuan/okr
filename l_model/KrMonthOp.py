@@ -10,7 +10,7 @@ class KrMonthPy:
         with conn:
             with conn.cursor() as cur:
                 cur.execute("SELECT kid, omonth FROM "+
-                            self.tableName+" WHERE kid=%s;", (krid,))
+                            self.tableName+" WHERE kid=%s order by omonth;", (krid,))
                 resultList=[]
                 for record in cur:
                     resultList.append(str(record[1]))
