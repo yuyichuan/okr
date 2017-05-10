@@ -33,13 +33,13 @@
             <nav>
             	<div class="w1k middle">
             	    %if viewmodel['umage']:
-            	    <span class="text-c right-brd"><a href="/departmentokr" class='now nav'>部门OKR管理</a></span>
+            	    <span class="text-c"><a href="/departmentokr" class='now nav'>部门OKR管理</a></span>
                 	%end
                 	%if viewmodel['uproject']:
-                	<span class="text-c right-brd"><a href="/projectokr" class='nav'>项目OKR管理</a></span>
+                	<span class="text-c"><a href="/projectokr" class='nav'>项目OKR管理</a></span>
                 	%end
                 	% if viewmodel['uperson']:
-                	<span class="text-c right-brd"><a href="/personokr" class='nav'>个人OKR管理</a></span>
+                	<span class="text-c"><a href="/personokr" class='nav'>个人OKR管理</a></span>
                 	% end
                 	% if viewmodel['umage']:
                 	<span class="text-c"><a href="/showdepartmentokr" class="nav">部门OKR展示</a></span>
@@ -54,7 +54,16 @@
         <!--内容开始-->
         <input type="hidden" name="dispatcher" id="dispatcher" value="okr-manage" data-urlAfterSave="/departmentokr" data-urlDelete="/delokr">
         <div class="middle m-t30 cnt-title">
-        	<div class="w1k middle"><b>OKR管理</b><button class="orange-btn f-r" id="addO" title="新增O" klevel="{{viewmodel['kolevel']}}" pkid="0">新增<b class="o-font">O</b></button></div>
+        	<div class="w1k middle"><b>OKR管理</b>&nbsp;&nbsp;&nbsp;&nbsp;<select id="selectmonth">
+        	        <option value="">请选择月度</option>
+        	            % for i in [1,2,3,4,5,6,7,8,9,10,11,12]:
+        	                % if i == viewmodel['selectmonth']:
+                                <option value="{{i}}" selected="selected">{{i}}月</option>
+                            % else:
+        	                    <option value="{{i}}">{{i}}月</option>
+        	                % end
+        	            % end
+        	        </select><button class="orange-btn f-r" id="addO" title="新增O" klevel="{{viewmodel['kolevel']}}" pkid="0">新增<b class="o-font">O</b></button></div>
         </div>
             <div class="table-div okr-gl">
                 <table class="m-t15">

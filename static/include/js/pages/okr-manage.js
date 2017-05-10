@@ -427,6 +427,15 @@ define(function(require, exports, module) {
 
                         }
                     })
+              }).on('change', '#selectmonth', function(){
+                    var showmevar='';
+                    if ($('#showme').length > 0){
+                        showmevar = '&showme='+($('#showme').is(':checked')?$('#showme').val():'')
+                    }
+                    location.href = afterSaveUrl+'?selectmonth='+$('#selectmonth').val()+showmevar;
+              }).on('click', '#showme', function(){
+                    var showmevar = '&showme='+($('#showme').is(':checked')?$('#showme').val():'')
+                    location.href = afterSaveUrl+'?selectmonth='+$('#selectmonth').val()+showmevar;
               });
 
         },

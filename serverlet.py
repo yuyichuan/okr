@@ -160,7 +160,7 @@ def showdepartmentokr():
 
         conn = PersistPool.okrPool.getconn()
 
-        result['okrs'] = getokrs(conn, O_DEPARTMENT_LEVEL, 0)
+        result['okrs'] = getokrs(conn, O_DEPARTMENT_LEVEL, 0, result['selectmonth'])
         allusers = KrUserOpPy().allUsers(conn)
         result['userscount'] = len(allusers)
         result['users'] = doubleUser(allusers)
@@ -185,7 +185,7 @@ def departmentokr():
 
         conn = PersistPool.okrPool.getconn()
 
-        result['okrs'] = getokrs(conn, O_DEPARTMENT_LEVEL, 0)
+        result['okrs'] = getokrs(conn, O_DEPARTMENT_LEVEL, 0, result['selectmonth'])
         allusers = KrUserOpPy().allUsers(conn)
         result['userscount']=len(allusers)
         result['users']=doubleUser(allusers)
@@ -206,11 +206,23 @@ def projectokr():
     if s and s.has_key('uid') and s['uid'] > 0 and hasgroup(s['groupids'], PROJECT):
         result={}
         initUserInfo(result, s)
+
+        showme = request.params.get('showme')
+        result['showme'] = '' if showme is None else showme
+
         result['curid'] = s['uid']
 
         conn = PersistPool.okrPool.getconn()
 
-        result['okrs'] = getokrs(conn, O_PROJECT_LEVEL, s['uid'])
+        tpokrs = getokrs(conn, O_PROJECT_LEVEL, s['uid'], result['selectmonth'])
+        if showme is None:
+            result['okrs']=tpokrs
+        else:
+            result['okrs']=[]
+            for oo in tpokrs:
+                if oo['ouid'] == s['uid']:
+                    result['okrs'].append(oo)
+
         allusers = KrUserOpPy().allUsers(conn)
         result['userscount'] = len(allusers)
         result['users'] = doubleUser(allusers)
@@ -236,7 +248,7 @@ def personokr():
 
         conn = PersistPool.okrPool.getconn()
 
-        result['okrs'] = getokrs(conn, O_PERSON_LEVEL, s['uid'])
+        result['okrs'] = getokrs(conn, O_PERSON_LEVEL, s['uid'], result['selectmonth'])
         allusers = []
         allusers.append(KrUserOpPy().getUser(conn, s['uid']))
         result['userscount'] = len(allusers)
@@ -443,12 +455,12 @@ def formatlinkusers(okrlist):
     return
 
 
-def getokrs(conn, okrlevel, uid):
-    okrs = KrOpPy().allOkr(conn, okrlevel, uid)
+def getokrs(conn, okrlevel, uid, month):
+    okrs = KrOpPy().allOkr(conn, okrlevel, uid, month)
     formatlinkusers(okrs)
 
     for okr in okrs:
-        getSubOkrs(conn, okr)
+        getSubOkrs(conn, okr, month)
 
     return okrs
 
@@ -462,13 +474,13 @@ def getokrs(conn, okrlevel, uid):
 #       7--
 #         8     complement start here
 #         9
-def getSubOkrs(conn, okr):
-    subokrs = KrOpPy().allSubOkr(conn, okr['kid'])
+def getSubOkrs(conn, okr, month):
+    subokrs = KrOpPy().allSubOkr(conn, okr['kid'], month)
     formatlinkusers(subokrs)
     okr['krs'] = subokrs
     if len(subokrs) > 0:
         for subokr in subokrs:
-            getSubOkrs(conn, subokr)
+            getSubOkrs(conn, subokr, month)
 
         stime=reduce(lambda x,y:(y['stime'] if (x is None or (y['stime'] is not None and y['stime'] < x)) else x), subokrs, None)
         okr['stime'] = stime
@@ -487,6 +499,11 @@ def initUserInfo(result, s):
     result['uproject'] = hasgroup(s['groupids'], PROJECT)
     result['uperson'] = hasgroup(s['groupids'], PERSON)
     result['uadmin'] = hasgroup(s['groupids'], ADMIN)
+
+    # selectmonth
+    selectmonth = request.params.get('selectmonth')
+    result['selectmonth'] = None if selectmonth is None or selectmonth == '' else int(selectmonth)
+
     return
 
 

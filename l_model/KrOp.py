@@ -36,13 +36,23 @@ class KrOpPy:
         return item
 
     # get all Okr
-    def allOkr(self, conn, klevel, uid):
+    def allOkr(self, conn, klevel, uid, month):
         with conn:
             with conn.cursor() as cur:
                 if uid > 0:
-                    cur.execute("SELECT a.* FROM "+ self.tableName + " a JOIN okr_user b on a.kid=b.kid WHERE a.klevel=%s and b.uid = %s;", (klevel, uid))
+                    if month > 0:
+                        cur.execute(
+                            "SELECT a.* FROM " + self.tableName + " a JOIN okr_user b ON a.kid=b.kid  JOIN okr_month c ON a.kid=c.kid WHERE a.klevel=%s and b.uid = %s and c.omonth =%s;",
+                            (klevel, uid, month))
+                    else:
+                        cur.execute("SELECT a.* FROM "+ self.tableName + " a JOIN okr_user b on a.kid=b.kid WHERE a.klevel=%s and b.uid = %s;", (klevel, uid))
                 else:
-                    cur.execute("SELECT * FROM " + self.tableName + " WHERE klevel=%s;", (klevel,))
+                    if month > 0:
+                        cur.execute(
+                            "SELECT a.* FROM " + self.tableName + " a JOIN okr_month b on a.kid=b.kid WHERE a.klevel=%s and b.omonth = %s;",
+                            (klevel, month))
+                    else:
+                        cur.execute("SELECT * FROM " + self.tableName + " WHERE klevel=%s;", (klevel,))
 
                 resultList = []
                 for row in cur:
@@ -50,10 +60,13 @@ class KrOpPy:
                 return resultList
 
     # get all sub Okr
-    def allSubOkr(self, conn, pkid):
+    def allSubOkr(self, conn, pkid, month):
         with conn:
             with conn.cursor() as cur:
-                cur.execute("SELECT * FROM " + self.tableName + " WHERE pkid=%s ORDER BY pkid, kid;", (pkid,))
+                if month > 0:
+                    cur.execute("SELECT a.* FROM " + self.tableName + " a JOIN okr_month b on a.kid=b.kid WHERE a.pkid=%s and b.omonth=%s ORDER BY a.pkid, a.kid;", (pkid, month))
+                else:
+                    cur.execute("SELECT * FROM " + self.tableName + " WHERE pkid=%s ORDER BY pkid, kid;", (pkid,))
 
                 resultList = []
                 for row in cur:
