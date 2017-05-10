@@ -103,6 +103,8 @@ class KrOpPy:
 
                 KrMonthPy().saveMonthsOkr(conn, okr['kid'], okr['planmonth'].split(","))
 
+                KrUserRelationPy().saveUserOkr(conn, okr['kid'], okr['link_users'].split(","))
+
                 # save the original okr info
                 cur.execute("UPDATE "+ self.tableName +" SET klevel=%s, pkid=%s, kdesc=%s, planmonth=%s, link_users=%s, plandays=%s, elevel=%s, updatetime=%s, ouid=%s WHERE kid=%s;",
                             (okr['klevel'],
