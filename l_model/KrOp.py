@@ -26,8 +26,8 @@ class KrOpPy:
         item['link_users'] = KrUserRelationPy().getUser(conn, item['kid'])
         item['plandays'] = row[6]
         item['elevel'] = row[7]
-        item['stime'] = row[8]
-        item['etime'] = row[9]
+        item['stime'] = None if row[8] is None else '%04d'%row[8].year+'%02d'%row[8].month+'%02d'%row[8].day
+        item['etime'] = None if row[9] is None else '%04d'%row[9].year+'%02d'%row[9].month+'%02d'%row[9].day
         item['status'] = row[10]
         item['createtime'] = row[11]
         item['updatetime'] = row[12]

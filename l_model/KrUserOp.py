@@ -9,7 +9,7 @@ class KrUserOpPy:
     def allUsers(self, conn):
         with conn:
             with conn.cursor() as cur:
-                cur.execute("SELECT uid, uaccount, uname, groupids from " + self.tableName + " order by uname;")
+                cur.execute("SELECT uid, uaccount, uname, groupids from " + self.tableName + " order by uname desc;")
                 resultList = []
                 for row in cur:
                     item = {}

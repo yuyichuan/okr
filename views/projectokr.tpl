@@ -59,22 +59,22 @@
             <div class="table-div okr-gl">
                 <table class="m-t15">
                 	<thead>
-                	    <th width="5%">ID</th>
-                    	<th width="5%">项目O</th>
+                	    <th width="4%">ID</th>
+                    	<th width="7%">项目O</th>
                         <th width="30%">项目KR</th>
                         <th width="12%">参与人员</th>
                         <th width="7%">计划月份</th>
                         <th width="7%">计划人日</th>
                         <th width="4%">难度</th>
-                        <th width="6%">完成度(%)</th>
-                        <th width="11%">开始日期</th>
+                        <th width="6%">完成(%)</th>
+                        <th width="10%">开始日期</th>
                         <th width="13%">操作</th>
                     </thead>
                     <tbody>
                     % for depto in viewmodel['okrs']:
                     	<tr id="{{depto['kid']}}">
                     	    <td>{{depto['kid']}}</td>
-                        	<td colspan="2" class="krCnt"><a href="javascript:;" class="switchIcon clo-op-op f-l" subClass="{{depto['kid']}}"></a><div class="text-hidden w600"><a href="javascript:;" class="showDetail">{{depto['kdesc']}}</a></div></td>
+                        	<td colspan="2" class="krCnt"><a href="javascript:;" class="switchIcon clo-op-op f-l" subClass="{{depto['kid']}}"></a><div class="text-hidden w500"><a href="javascript:;" class="showDetail">{{depto['kdesc']}}</a></div></td>
                             <td class="krPeople" peopleIds="{{depto['link_user_ids']}}"><div class="text-hidden w180"><a href="javascript:;" class="showDetail">{{depto['link_user_names']}}</a></div></td>
                             <td class="krMonth" monthIds="{{depto['planmonth']}}"><div class="text-hidden w120"><a href="javascript:;" class="showDetail">{{depto['planmonth']}}</a></div></td>
                             <td class="krTime">{{depto['plandays']}}</td>
@@ -98,7 +98,7 @@
                         <tr id="{{deptkr['kid']}}" class="{{depto['kid']}}"  parentId="{{deptkr['pkid']}}">
                         	<td></td>
                         	<td>{{deptkr['kid']}}</td>
-                            <td class="krCnt"><div class="text-hidden w500"><a href="javascript:;" class="showDetail">{{deptkr['kdesc']}}</a></div></td>
+                            <td class="krCnt"><div class="text-hidden w400"><a href="javascript:;" class="showDetail">{{deptkr['kdesc']}}</a></div></td>
                             <td class="krPeople" peopleIds="{{deptkr['link_user_ids']}}"><div class="text-hidden w180"><a href="javascript:;" class="showDetail">{{deptkr['link_user_names']}}</a></div></td>
                             <td class="krMonth" monthIds="{{deptkr['planmonth']}}"><div class="text-hidden w120"><a href="javascript:;" class="showDetail">{{deptkr['planmonth']}}</a></div></td>
                             <td class="krTime">{{deptkr['plandays']}}</td>
