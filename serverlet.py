@@ -164,6 +164,11 @@ def showdepartmentokr():
         conn = PersistPool.okrPool.getconn()
 
         result['okrs'] = getokrs(conn, O_DEPARTMENT_LEVEL, 0, result['selectmonth'])
+
+        withoutDepartmentOkr = getokrswithoutdepartment(conn, result['selectmonth'])
+        if len(withoutDepartmentOkr['krs']) > 0:
+            result['okrs'].append(withoutDepartmentOkr)
+
         allusers = KrUserOpPy().allUsers(conn)
         result['userscount'] = len(allusers)
         result['users'] = doubleUser(allusers)
@@ -471,6 +476,25 @@ def getokrs(conn, okrlevel, uid, month):
     okrs.sort(cmp=lambda x, y: cmp(x['kid'], y['kid']))
     return okrs
 
+def getokrswithoutdepartment(conn, month):
+    virtualokr = {}
+    virtualokr['kid'] = -1
+    virtualokr['klevel'] = 0
+    virtualokr['pkid'] = 0
+    virtualokr['kdesc'] = 'Other Objects'
+    virtualokr['planmonth'] = ''
+    virtualokr['link_users'] = ''
+    virtualokr['plandays'] = 0.0
+    virtualokr['elevel'] = 5
+    virtualokr['stime'] = None
+    virtualokr['etime'] = None
+    virtualokr['complement'] = 0
+    virtualokr['link_user_ids']=''
+    virtualokr['link_user_names']=''
+
+    getSubOkrs(conn, virtualokr, month)
+
+    return virtualokr
 
 # 1--------
 # 2--------
@@ -482,7 +506,12 @@ def getokrs(conn, okrlevel, uid, month):
 #         8     complement start here
 #         9
 def getSubOkrs(conn, okr, month):
-    subokrs = KrOpPy().allSubOkr(conn, okr['kid'], month)
+
+    if okr['kid'] == -1:
+        subokrs = KrOpPy().allProjectOkrWithoutDepartmentO(conn, month)
+    else:
+        subokrs = KrOpPy().allSubOkr(conn, okr['kid'], month)
+
     formatlinkusers(subokrs)
     okr['krs'] = subokrs
     if len(subokrs) > 0:

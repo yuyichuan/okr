@@ -98,7 +98,13 @@
                             </td>
                             <td class="krMonth" monthIds="{{depto['planmonth']}}"><div class="text-hidden w90"><a href="javascript:;" class="showDetail">{{depto['planmonth']}}</a></div></td>
                     	    <td>{{depto['kid']}}</td>
-                        	<td colspan="4" class="krCnt"><a href="javascript:;" class="switchIcon clo-op-op f-l" subClass="{{depto['kid']}}"></a><div class="text-hidden w1220"><a href="javascript:;" class="showDetail">[{{depto['link_user_names']}}]{{depto['kdesc']}}</a></div></td>
+                        	<td colspan="4" class="krCnt"><a href="javascript:;" class="switchIcon clo-op-op f-l" subClass="{{depto['kid']}}"></a><div class="text-hidden w1220"><a href="javascript:;" class="showDetail">
+                        	% if depto['kid'] == -1:
+                        	其他项目O
+                        	% else:
+                        	[{{depto['link_user_names']}}]{{depto['kdesc']}}
+                        	% end
+                        	</a></div></td>
                         </tr>
                         % for deptkr in depto['krs']:
                         <tr id="{{deptkr['kid']}}" class="{{depto['kid']}}"  parentId="{{deptkr['pkid']}}">

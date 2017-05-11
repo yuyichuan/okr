@@ -35,6 +35,20 @@ class KrOpPy:
         item['complement'] = row[14]
         return item
 
+    # all project o without department o
+    def allProjectOkrWithoutDepartmentO(self, conn, month):
+        with conn:
+            with conn.cursor() as cur:
+                if month > 0:
+                    cur.execute("SELECT a.* FROM okr a LEFT JOIN okr_month b ON a.kid = b.kid WHERE b.omonth=%s AND a.pkid =0 AND a.klevel=1 ORDER BY a.kid;", (month,))
+                else:
+                    cur.execute("SELECT * FROM okr WHERE pkid=0 AND klevel=1 ORDER BY kid;")
+
+                resultList = []
+                for row in cur:
+                    resultList.append(self.constructOkr(conn, row))
+                return resultList
+
     # get all Okr
     def allOkr(self, conn, klevel, uid, month):
         with conn:
