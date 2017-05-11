@@ -223,7 +223,7 @@ def projectokr():
         conn = PersistPool.okrPool.getconn()
 
         tpokrs = getokrs(conn, O_PROJECT_LEVEL, s['uid'], result['selectmonth'])
-        if showme is None:
+        if showme != 'showme':
             result['okrs']=tpokrs
         else:
             result['okrs']=[]
