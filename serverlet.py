@@ -147,12 +147,15 @@ def okr():
         if hasgroup(s['groupids'], ADMIN):
             redirect('/users', code=302)
 
+        # default
+        redirect('/showdepartmentokr', code=302)
+
     redirect('/', code=302)
 
 @route('/showdepartmentokr')
 def showdepartmentokr():
     s = bottle.request.environ.get('beaker.session')
-    if s and s.has_key('uid') and s['uid'] > 0 and hasgroup(s['groupids'], DEPARTMENT):
+    if s and s.has_key('uid') and s['uid'] > 0:
         result = {}
         initUserInfo(result, s)
 
@@ -490,7 +493,7 @@ def getSubOkrs(conn, okr, month):
         if int(okr['klevel']) < O_PERSON_LEVEL:
             okr['plandays'] = complement['plandays']
 
-        okr['complement'] = int(complement['cmpdays'] * 100 / complement['plandays'])
+        okr['complement'] = 0 if complement['plandays'] <= 0.0 else int(complement['cmpdays'] * 100 / complement['plandays'])
     return
 
 def initUserInfo(result, s):

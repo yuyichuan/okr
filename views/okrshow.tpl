@@ -41,12 +41,10 @@
                 	% if viewmodel['uperson']:
                 	<span class="text-c"><a href="/personokr" class='nav'>个人OKR管理</a></span>
                 	% end
-                	% if viewmodel['umage']:
-                	<span class="text-c"><a href="/showdepartmentokr" class="now nav">部门OKR展示</a></span>
-                	% end
                 	% if viewmodel['uadmin']:
                 	<span class="text-c"><a href="/users" class="nav">用户管理</a></span>
                 	% end
+                	<span class="text-c"><a href="/showdepartmentokr" class="now nav">部门OKR展示</a></span>
                 </div>
             </nav>
         </header>
@@ -68,84 +66,103 @@
             <div class="table-div okr-gl">
                 <table class="m-t15">
                 	<thead>
-                	    <th width="5%">ID</th>
-                    	<th width="5%">部门O</th>
-                        <th width="5%">项目O</th>
-                        <th width="5%">个人O</th>
-                        <th width="33%">个人KR</th>
-                        <th width="12%">参与人员</th>
-                        <th width="7%">计划月份</th>
-                        <th width="7%">计划人日</th>
-                        <th width="4%">难度</th>
-                        <th width="6%">完成(%)</th>
-                        <th width="11%">开始日期</th>
+                	    <th width="80px;">开始日期</th>
+                	    <th width="60px;">完成(%)</th>
+                	    <th width="30px;">难度</th>
+                	    <th width="60px;">计划人日</th>
+                	    <th width="100px;">计划月份</th>
+                	    <th width="20px;">ID</th>
+                    	<th width="30px;">部门</th>
+                        <th width="30px;">项目</th>
+                        <th width="30px;">个人</th>
+                        <th>个人KR</th>
                     </thead>
                     <tbody>
                     % for depto in viewmodel['okrs']:
                     	<tr id="{{depto['kid']}}">
-                    	    <td>{{depto['kid']}}</td>
-                        	<td colspan="4" class="krCnt"><a href="javascript:;" class="switchIcon clo-op-op f-l" subClass="{{depto['kid']}}"></a><div class="text-hidden w400"><a href="javascript:;" class="showDetail">{{depto['kdesc']}}</a></div></td>
-                            <td class="krPeople" peopleIds="{{depto['link_user_ids']}}"><div class="text-hidden w180"><a href="javascript:;" class="showDetail">{{depto['link_user_names']}}</a></div></td>
-                            <td class="krMonth" monthIds="{{depto['planmonth']}}"><div class="text-hidden w120"><a href="javascript:;" class="showDetail">{{depto['planmonth']}}</a></div></td>
-                            <td class="krTime">{{depto['plandays']}}</td>
-                            <td class="krLevel">{{str(depto['elevel'])}}</td>
-                            <td>{{depto['complement']}}</td>
-                            <td>
+                    	    <td>
                             % if depto['stime'] is not None:
                                 {{depto['stime']}}
                             % end
                             </td>
+                            <td>
+                            % if depto['plandays'] > 0.0:
+                                {{depto['complement']}}
+                                % end
+                            </td>
+                            <td class="krLevel">{{str(depto['elevel'])}}</td>
+                            <td class="krTime">
+                            % if depto['plandays'] > 0.0:
+                                {{depto['plandays']}}
+                                % end
+                            </td>
+                            <td class="krMonth" monthIds="{{depto['planmonth']}}"><div class="text-hidden w90"><a href="javascript:;" class="showDetail">{{depto['planmonth']}}</a></div></td>
+                    	    <td>{{depto['kid']}}</td>
+                        	<td colspan="4" class="krCnt"><a href="javascript:;" class="switchIcon clo-op-op f-l" subClass="{{depto['kid']}}"></a><div class="text-hidden w1220"><a href="javascript:;" class="showDetail">[{{depto['link_user_names']}}]{{depto['kdesc']}}</a></div></td>
                         </tr>
                         % for deptkr in depto['krs']:
                         <tr id="{{deptkr['kid']}}" class="{{depto['kid']}}"  parentId="{{deptkr['pkid']}}">
-                        	<td></td>
-                        	<td>{{deptkr['kid']}}</td>
-                            <td colspan="3" class="krCnt"><a href="javascript:;" class="switchIcon clo-op-op f-l" subClass="{{deptkr['kid']}}"></a><div class="text-hidden w300"><a href="javascript:;" class="showDetail">{{deptkr['kdesc']}}</a></div></td>
-                            <td class="krPeople" peopleIds="{{deptkr['link_user_ids']}}"><div class="text-hidden w180"><a href="javascript:;" class="showDetail">{{deptkr['link_user_names']}}</a></div></td>
-                            <td class="krMonth" monthIds="{{deptkr['planmonth']}}"><div class="text-hidden w120"><a href="javascript:;" class="showDetail">{{deptkr['planmonth']}}</a></div></td>
-                            <td class="krTime">{{deptkr['plandays']}}</td>
-                            <td class="krLevel">{{str(deptkr['elevel'])}}</td>
-                            <td class="krComplete">{{deptkr['complement']}}</td>
                             <td>
                              % if deptkr['stime'] is not None:
                                 {{deptkr['stime']}}
                             % end
                             </td>
+                            <td class="krComplete">
+                            % if deptkr['plandays'] > 0.0:
+                                {{deptkr['complement']}}
+                            % end
+                            </td>
+                            <td class="krLevel">{{str(deptkr['elevel'])}}</td>
+                            <td class="krTime">
+                            % if deptkr['plandays'] > 0.0:
+                                {{deptkr['plandays']}}
+                                % end
+                            </td>
+                            <td class="krMonth" monthIds="{{deptkr['planmonth']}}"><div class="text-hidden w90"><a href="javascript:;" class="showDetail">{{deptkr['planmonth']}}</a></div></td>
+                        	<td>{{deptkr['kid']}}</td>
+                        	<td ></td>
+                            <td colspan="3" class="krCnt"><a href="javascript:;" class="switchIcon clo-op-op f-l" subClass="{{deptkr['kid']}}"></a><div class="text-hidden w1180"><a href="javascript:;" class="showDetail">[{{deptkr['link_user_names']}}]{{deptkr['kdesc']}}</a></div></td>
                         </tr>
                             % for deptkrr in deptkr['krs']:
                         <tr id="{{deptkrr['kid']}}" class="{{depto['kid']}} {{deptkr['kid']}}"  parentId="{{deptkrr['pkid']}}">
-                        	<td></td>
-                        	<td></td>
-                        	<td>{{deptkrr['kid']}}</td>
-                            <td colspan="2" class="krCnt"><a href="javascript:;" class="switchIcon clo-op-op f-l" subClass="{{deptkrr['kid']}}"></a><div class="text-hidden w180"><a href="javascript:;" class="showDetail">{{deptkrr['kdesc']}}</a></div></td>
-                            <td class="krPeople" peopleIds="{{deptkrr['link_user_ids']}}"><div class="text-hidden w180"><a href="javascript:;" class="showDetail">{{deptkrr['link_user_names']}}</a></div></td>
-                            <td class="krMonth" monthIds="{{deptkrr['planmonth']}}"><div class="text-hidden w120"><a href="javascript:;" class="showDetail">{{deptkrr['planmonth']}}</a></div></td>
-                            <td class="krTime">{{deptkrr['plandays']}}</td>
-                            <td class="krLevel">{{str(deptkrr['elevel'])}}</td>
-                            <td class="krComplete">{{deptkrr['complement']}}</td>
                             <td>
                              % if deptkrr['stime'] is not None:
                                 {{deptkrr['stime']}}
                             % end
                             </td>
+                            <td class="krComplete">
+                            % if deptkrr['plandays'] > 0.0:
+                                {{deptkrr['complement']}}
+                                % end
+                            </td>
+                            <td class="krLevel">{{str(deptkrr['elevel'])}}</td>
+                            <td class="krTime">
+                            % if deptkrr['plandays'] > 0.0:
+                                {{deptkrr['plandays']}}
+                                % end
+                            </td>
+                            <td class="krMonth" monthIds="{{deptkrr['planmonth']}}"><div class="text-hidden w90"><a href="javascript:;" class="showDetail">{{deptkrr['planmonth']}}</a></div></td>
+                            <td>{{deptkrr['kid']}}</td>
+                        	<td ></td>
+                        	<td ></td>
+                            <td colspan="2" class="krCnt"><a href="javascript:;" class="switchIcon clo-op-op f-l" subClass="{{deptkrr['kid']}}"></a><div class="text-hidden w1140"><a href="javascript:;" class="showDetail">[{{deptkrr['link_user_names']}}]{{deptkrr['kdesc']}}</a></div></td>
                         </tr>
                                 % for deptkrrr in deptkrr['krs']:
                         <tr id="{{deptkrrr['kid']}}" class="{{depto['kid']}} {{deptkr['kid']}} {{deptkrr['kid']}}"  parentId="{{deptkrrr['pkid']}}">
-                        	<td></td>
-                        	<td></td>
-                        	<td></td>
-                        	<td>{{deptkrrr['kid']}}</td>
-                            <td class="krCnt"><div class="text-hidden w120"><a href="javascript:;" class="showDetail">{{deptkrrr['kdesc']}}</a></div></td>
-                            <td class="krPeople" peopleIds="{{deptkrrr['link_user_ids']}}"><div class="text-hidden w180"><a href="javascript:;" class="showDetail">{{deptkrrr['link_user_names']}}</a></div></td>
-                            <td class="krMonth" monthIds="{{deptkrrr['planmonth']}}"><div class="text-hidden w120"><a href="javascript:;" class="showDetail">{{deptkrrr['planmonth']}}</a></div></td>
-                            <td class="krTime">{{deptkrrr['plandays']}}</td>
-                            <td class="krLevel">{{str(deptkrrr['elevel'])}}</td>
-                            <td class="krComplete">{{deptkrrr['complement']}}</td>
                             <td>
                              % if deptkrrr['stime'] is not None:
                                 {{deptkrrr['stime']}}
                             % end
                             </td>
+                            <td class="krComplete">{{deptkrrr['complement']}}</td>
+                            <td class="krLevel">{{str(deptkrrr['elevel'])}}</td>
+                            <td class="krTime">{{deptkrrr['plandays']}}</td>
+                            <td class="krMonth" monthIds="{{deptkrrr['planmonth']}}"><div class="text-hidden w90"><a href="javascript:;" class="showDetail">{{deptkrrr['planmonth']}}</a></div></td>
+                            <td>{{deptkrrr['kid']}}</td>
+                        	<td ></td>
+                        	<td ></td>
+                        	<td ></td>
+                            <td class="krCnt"><div class="text-hidden w1100"><a href="javascript:;" class="showDetail">[{{deptkrrr['link_user_names']}}]{{deptkrrr['kdesc']}}</a></div></td>
                         </tr>
                                 % end
                             % end

@@ -92,6 +92,10 @@ input.orange-btn,button.orange-btn{line-height:normal;}
 .okr-gl table{ text-align:left;}
 .okr-gl table th,.okr-gl table td{ padding-left:10px;}
 .text-hidden{white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.w1220{width:1120px}
+.w1180{width:1120px}
+.w1140{width:1120px}
+.w1100{width:1120px}
 .w1120{width:1120px}
 .w910{width:910px;}
 .w690{width:690px;}
@@ -101,6 +105,7 @@ input.orange-btn,button.orange-btn{line-height:normal;}
 .w300{ width:305px;}
 .w180{width:180px;}
 .w120{width:120px;}
+.w90{width:90px;}
 .okr-xx{padding:10px 15px; line-height:28px;word-wrap:break-word;}
 .clo-op-clo,.clo-op-op{ width:20px; height:18px; margin-top:9px; margin-right:3px; background:url(../img/op-clo.png) no-repeat center 0;}
 .clo-op-op{ background-position:center -18px;}

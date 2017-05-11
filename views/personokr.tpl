@@ -41,12 +41,10 @@
                 	% if viewmodel['uperson']:
                 	<span class="text-c"><a href="/personokr" class='now nav'>个人OKR管理</a></span>
                 	% end
-                	% if viewmodel['umage']:
-                	<span class="text-c"><a href="/showdepartmentokr" class="nav">部门OKR展示</a></span>
-                	% end
                 	% if viewmodel['uadmin']:
                 	<span class="text-c"><a href="/users" class="nav">用户管理</a></span>
                 	% end
+                	<span class="text-c"><a href="/showdepartmentokr" class="nav">部门OKR展示</a></span>
                 </div>
             </nav>
         </header>

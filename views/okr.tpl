@@ -41,12 +41,10 @@
                 	% if viewmodel['uperson']:
                 	<span class="text-c"><a href="/personokr" class='nav'>个人OKR管理</a></span>
                 	% end
-                	% if viewmodel['umage']:
-                	<span class="text-c"><a href="/showdepartmentokr" class="nav">部门OKR展示</a></span>
-                	% end
                 	% if viewmodel['uadmin']:
                 	<span class="text-c"><a href="/users" class="nav">用户管理</a></span>
                 	% end
+                	<span class="text-c"><a href="/showdepartmentokr" class="nav">部门OKR展示</a></span>
                 </div>
             </nav>
         </header>
@@ -86,9 +84,17 @@
                         	<td colspan="2" class="krCnt"><a href="javascript:;" class="switchIcon clo-op-op f-l" subClass="{{depto['kid']}}"></a><div class="text-hidden w300"><a href="javascript:;" class="showDetail">{{depto['kdesc']}}</a></div></td>
                             <td class="krPeople" peopleIds="{{depto['link_user_ids']}}"><div class="text-hidden w180"><a href="javascript:;" class="showDetail">{{depto['link_user_names']}}</a></div></td>
                             <td class="krMonth" monthIds="{{depto['planmonth']}}"><div class="text-hidden w120"><a href="javascript:;" class="showDetail">{{depto['planmonth']}}</a></div></td>
-                            <td class="krTime">{{depto['plandays']}}</td>
+                            <td class="krTime">
+                            % if depto['plandays'] > 0.0:
+                            {{depto['plandays']}}
+                            % end
+                            </td>
                             <td class="krLevel">{{str(depto['elevel'])}}</td>
-                            <td>{{depto['complement']}}</td>
+                            <td>
+                            % if depto['plandays'] > 0.0:
+                            {{depto['complement']}}
+                            % end
+                            </td>
                             <td>
                             % if depto['stime'] is not None:
                                 {{depto['stime']}}
@@ -110,9 +116,17 @@
                             <td class="krCnt"><div class="text-hidden w180"><a href="javascript:;" class="showDetail">{{deptkr['kdesc']}}</a></div></td>
                             <td class="krPeople" peopleIds="{{deptkr['link_user_ids']}}"><div class="text-hidden w180"><a href="javascript:;" class="showDetail">{{deptkr['link_user_names']}}</a></div></td>
                             <td class="krMonth" monthIds="{{deptkr['planmonth']}}"><div class="text-hidden w120"><a href="javascript:;" class="showDetail">{{deptkr['planmonth']}}</a></div></td>
-                            <td class="krTime">{{deptkr['plandays']}}</td>
+                            <td class="krTime">
+                            % if deptkr['plandays'] > 0.0:
+                            {{deptkr['plandays']}}
+                            % end
+                            </td>
                             <td class="krLevel">{{str(deptkr['elevel'])}}</td>
-                            <td class="krComplete">{{deptkr['complement']}}</td>
+                            <td class="krComplete">
+                            % if deptkr['plandays'] > 0.0:
+                            {{deptkr['complement']}}
+                            % end
+                            </td>
                             <td>
                              % if deptkr['stime'] is not None:
                                 {{deptkr['stime']}}
