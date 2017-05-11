@@ -42,10 +42,13 @@ class KrOpPy:
                 if uid > 0:
                     if month > 0:
                         cur.execute(
-                            "SELECT a.* FROM " + self.tableName + " a JOIN okr_user b ON a.kid=b.kid  JOIN okr_month c ON a.kid=c.kid WHERE a.klevel=%s and b.uid = %s and c.omonth =%s;",
-                            (klevel, uid, month))
+                            "SELECT a.* FROM " + self.tableName + " a JOIN okr_user b ON a.kid=b.kid JOIN okr_month c ON a.kid=c.kid WHERE a.klevel=%s and b.uid =%s and c.omonth =%s "+
+                            "UNION SELECT d.* FROM " + self.tableName + " d LEFT JOIN okr_user e ON (d.kid=e.kid and e.uid=%s) JOIN okr_month f ON d.kid=f.kid WHERE d.klevel=%s AND d.pkid=0 AND e.uid is null AND d.ouid=%s AND f.omonth =%s;",
+                            (klevel, uid, month, uid, klevel, uid, month))
                     else:
-                        cur.execute("SELECT a.* FROM "+ self.tableName + " a JOIN okr_user b on a.kid=b.kid WHERE a.klevel=%s and b.uid = %s;", (klevel, uid))
+                        cur.execute("SELECT a.* FROM "+ self.tableName + " a JOIN okr_user b on a.kid=b.kid WHERE a.klevel=%s and b.uid = %s " +
+                                    "UNION SELECT c.* FROM " + self.tableName + " c LEFT JOIN okr_user d on (c.kid=d.kid and d.uid=%s) WHERE c.klevel=%s and d.uid is null and c.pkid=0 and c.ouid= %s;",
+                                    (klevel, uid, uid, klevel, uid))
                 else:
                     if month > 0:
                         cur.execute(
@@ -137,7 +140,7 @@ class KrOpPy:
             with conn.cursor() as cur:
 
                 # do not delete with sub okr
-                subs = self.allSubOkr(conn, okrid)
+                subs = self.allSubOkr(conn, okrid, 0)
                 if len(subs) > 0:
                     return False
 

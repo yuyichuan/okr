@@ -332,6 +332,9 @@ def saveoke():
             okr['elevel'] = request.forms.get('elevel')
 
         okr['plandays'] = request.forms.get('plandays')
+        if okr['klevel'] == str(O_DEPARTMENT_LEVEL) or okr['klevel'] == str(O_PROJECT_LEVEL):
+            okr['plandays'] = 0.0
+
         okr['status'] = '-1'
         okr['ouid'] = s['uid']
 

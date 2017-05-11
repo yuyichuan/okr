@@ -153,7 +153,7 @@ define(function(require, exports, module) {
                     //修改的代码
                     if(data.isEdit){
                         var curSign=$cur.attr('data-sign');//修改的标识
-                        var okrTime=okrTr.find('.krTime').html();//计划用时
+                        var okrTime=$.trim(okrTr.find('.krTime').html());//计划用时
                         var okrLevel=okrTr.find('.krLevel').html();//难度
                         var okrPeople=okrTr.find('.krPeople').attr('peopleIds').split(',');//参与人员的数组
                         var okrMonth=okrTr.find('.krMonth').attr('monthIds').split(',');//已选择月份的数组
@@ -409,7 +409,7 @@ define(function(require, exports, module) {
                     var me=$(this);
                     var curId=me.attr('data-id');
                     var krDetail=me.closest('tr').find('.showDetail').html();
-                    var krComplete=me.closest('tr').find('.krComplete').html();
+                    var krComplete=$.trim(me.closest('tr').find('.krComplete').html());
                     $.dialog({
                         title:'wanchengdu',
                         padding:0,

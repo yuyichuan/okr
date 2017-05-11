@@ -52,7 +52,7 @@
         <!--内容开始-->
         <input type="hidden" name="dispatcher" id="dispatcher" value="okr-manage" data-urlAfterSave="/projectokr" data-urlDelete="/delokr">
         <div class="middle m-t30 cnt-title">
-        	<div class="w1k middle"><b>OKR管理</b>&nbsp;&nbsp;&nbsp;&nbsp;</span><b>只显示我创建的O<input id="showme" type="checkbox" value="showme" class="checkItem"
+        	<div class="w1k middle"><b>OKR管理</b>&nbsp;&nbsp;&nbsp;&nbsp;</span><b>只显示我创建的O<input id="showme" type="checkbox" value="showme"
         	            % if 'showme' == viewmodel['showme']:
         	                checked="checked"
         	            % end
