@@ -468,6 +468,7 @@ def getokrs(conn, okrlevel, uid, month):
     for okr in okrs:
         getSubOkrs(conn, okr, month)
 
+    okrs.sort(cmp=lambda x, y: cmp(x['kid'], y['kid']))
     return okrs
 
 
