@@ -60,13 +60,13 @@ ouid bigint,
 complement integer NOT NULL DEFAULT 0,
 CONSTRAINT pk_kid PRIMARY KEY (kid)
 ) ;
-COMMENT ON COLUMN public.okr.plandays IS '计划用天数';
-COMMENT ON COLUMN public.okr.elevel IS '难度';
-COMMENT ON COLUMN public.okr.stime IS '实际开始时间';
-COMMENT ON COLUMN public.okr.etime IS '实际结束时间';
-COMMENT ON COLUMN public.okr.status IS '状态:-1未开始，0进行中， 1完成了';
-COMMENT ON COLUMN public.okr.ouid IS '最后操作者';
-COMMENT ON COLUMN public.okr.complement IS '完成度';
+COMMENT ON COLUMN okr.plandays IS '计划用天数';
+COMMENT ON COLUMN okr.elevel IS '难度';
+COMMENT ON COLUMN okr.stime IS '实际开始时间';
+COMMENT ON COLUMN okr.etime IS '实际结束时间';
+COMMENT ON COLUMN okr.status IS '状态:-1未开始，0进行中， 1完成了';
+COMMENT ON COLUMN okr.ouid IS '最后操作者';
+COMMENT ON COLUMN okr.complement IS '完成度';
 
 -- okr log
 CREATE TABLE okr_log
@@ -99,6 +99,18 @@ CREATE TABLE okr_month
    CONSTRAINT pk_omid PRIMARY KEY (omid)
 ) ;
 
+--okr_month_check
+CREATE TABLE okr_month_check
+(
+   omid serial,
+   kid bigint   NOT NULL,
+   omonth bigint NOT NULL,
+   status bigint NOT NULL,
+   uid bigint     NOT NULL,
+   createtime timestamp without time zone NOT NULL,
+   CONSTRAINT pk_check_omid PRIMARY KEY (omid)
+) ;
+COMMENT ON COLUMN okr_month_check.status IS '状态:-1，未完成, 0进行中， 1完成了';
 
 --okr user
 CREATE TABLE okr_user

@@ -1,11 +1,10 @@
-
-
 __author__ = 'yuyc'
 
 import time
 from KrMonthOp import KrMonthPy
 from KrUserRelation import KrUserRelationPy
 from KrLog import KrOpLogPy
+from KrMonthCheckOp import KrMonthCheckPy
 
 
 class KrOpPy:
@@ -16,7 +15,7 @@ class KrOpPy:
         return time.strftime('%Y%m%d %H:%M:%S', time.localtime(time.time()))
 
     # construct okr by record
-    def constructOkr(self, conn, row):
+    def constructOkr(self, conn, row, month):
         item = {}
         item['kid'] = row[0]
         item['klevel'] = row[1]
@@ -33,6 +32,8 @@ class KrOpPy:
         item['updatetime'] = row[12]
         item['ouid'] = row[13]
         item['complement'] = row[14]
+        if month > 0:
+            item['cstatus'] = KrMonthCheckPy().getMonth(conn, item['kid'], month)
         return item
 
     # all project o without department o
@@ -46,7 +47,7 @@ class KrOpPy:
 
                 resultList = []
                 for row in cur:
-                    resultList.append(self.constructOkr(conn, row))
+                    resultList.append(self.constructOkr(conn, row, month))
                 return resultList
 
     # get all Okr
@@ -73,7 +74,7 @@ class KrOpPy:
 
                 resultList = []
                 for row in cur:
-                    resultList.append(self.constructOkr(conn, row))
+                    resultList.append(self.constructOkr(conn, row, month))
                 return resultList
 
     # get all sub Okr
@@ -87,7 +88,7 @@ class KrOpPy:
 
                 resultList = []
                 for row in cur:
-                    resultList.append(self.constructOkr(conn, row))
+                    resultList.append(self.constructOkr(conn, row, month))
                 return resultList
 
     # get one Okr
@@ -95,7 +96,7 @@ class KrOpPy:
         with conn:
             with conn.cursor() as cur:
                 cur.execute("SELECT * FROM " + self.tableName + " WHERE kid=%s;", (krid,))
-                return self.constructOkr(conn, cur.fetchone())
+                return self.constructOkr(conn, cur.fetchone(), None)
 
     # save okr info into database
     def newOkr(self, conn, okr):

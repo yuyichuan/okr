@@ -77,8 +77,12 @@ define(function(require, exports, module) {
                     if (d.status === 0) {
                          popWin.tinyAlert('保存成功！', 1);
                         setTimeout(function () {
-                            location.href = afterSaveUrl;
-                        },1500);
+                            var showmevar='';
+                            if ($('#showme').length > 0){
+                                showmevar = '&showme='+($('#showme').is(':checked')?$('#showme').val():'')
+                            }
+                            location.href = afterSaveUrl+'?selectmonth='+$('#selectmonth').val()+showmevar;
+                        },500);
                     } else {
                         popWin.alert(d.errorMsg || '操作失败');
                     }
@@ -117,6 +121,37 @@ define(function(require, exports, module) {
             $('#goalLevel').find('option[value=' + okrLevel + ']').prop('selected',true);
             $('#kid').val(okrid);
         },
+
+        /*
+         * 新增检查框
+        * */
+        addCheckDialog:function($cur){
+            $.dialog({
+                id: 'monthCheckDialog',
+                title: '',
+                padding:0,
+                lock: true,
+                content:$('#monthCheckDialog')[0],
+                init:function(){
+                        var curcheck = this;
+                        var kid = $cur.attr("kid");
+                        var cmonth = $cur.attr("cmonth");
+                        var cstatus = $cur.attr("cstatus");
+                        $('#goalLevel').find('option').prop('selected',false);
+                        $('#goalLevel').find('option[value=' + cstatus + ']').prop('selected',true);
+
+                        $('#ckmkid').val(kid);
+                        $('#ckmMonth').val(cmonth);
+                        $('.saveBtn').off('click').on('click',function () {
+                            Main.doSave($('#okrForm'),curcheck);
+                        });
+                        $('.cancelBtn').off('click').on('click',function () {
+                            curcheck.close();
+                        });
+                    }
+                });
+        },
+
         /*
          * 新增开户弹框
          * */
@@ -340,6 +375,9 @@ define(function(require, exports, module) {
                     isEdit:false
                 });
                 return false;
+            }).on('click', '.showcheck', function(){
+                Main.addCheckDialog($(this));
+                return false;
             }).on('click','.delBtn',function () {
                 var me=$(this), $tr=me.closest('tr'),dataId='';
                 dataId=$tr.attr('id');
@@ -446,7 +484,6 @@ define(function(require, exports, module) {
             Main.initEvent();
             Main.initValidate();
             Main.initValidRules();
-
         }
 }
     Main.initpage();

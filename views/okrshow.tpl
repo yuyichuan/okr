@@ -126,7 +126,17 @@
                             </td>
                             <td class="krMonth" monthIds="{{deptkr['planmonth']}}"><div class="text-hidden w90"><a href="javascript:;" class="showDetail">{{deptkr['planmonth']}}</a></div></td>
                         	<td>{{deptkr['kid']}}</td>
-                        	<td ></td>
+                        	<td>
+                        	% if viewmodel['umage'] and viewmodel['selectmonth'] > 0 and deptkr['cstatus'] == '0':
+                        	<a href="javascript:;" class="showcheck" kid='{{deptkr['kid']}}' cmonth='{{viewmodel['selectmonth']}}' cstatus={{deptkr['cstatus']}} >检查</a>
+                        	% end
+                        	% if viewmodel['umage'] and viewmodel['selectmonth'] > 0 and deptkr['cstatus'] == '-1':
+                        	    未完
+                        	% end
+                        	% if viewmodel['umage'] and viewmodel['selectmonth'] > 0 and deptkr['cstatus'] == '1':
+                        	    完成
+                        	% end
+                        	</td>
                             <td colspan="3" class="krCnt"><a href="javascript:;" class="switchIcon clo-op-op f-l" subClass="{{deptkr['kid']}}"></a><div class="text-hidden w1180"><a href="javascript:;" class="showDetail">[{{deptkr['link_user_names']}}]{{deptkr['kdesc']}}</a></div></td>
                         </tr>
                             % for deptkrr in deptkr['krs']:
@@ -176,6 +186,23 @@
                     % end
                     </tbody>
                 </table>
+            </div>
+            <div class="add-kh middle add-o" style="display: none;" id="monthCheckDialog">
+                <form id="okrForm" action="/okrcheck" method="post">
+                    <input type="hidden" id="okrGoal" value="1"/>
+                    <input type="hidden" id="planTime" value="1"/>
+                    <input type="hidden" class="chkMonth" value="1"/>
+                    <input type="hidden" id="ckmkid" name="kid" value=""/>
+                    <input type="hidden" id="ckmMonth" name="checkMonth" value="" />
+                    <ul>
+                        <li><i><b>*</b>检查:</i><label><select name="monthcheck" id="goalLevel">
+                            <option value="0">未检查</option>
+                            <option value="1">完成</option>
+                            <option value="-1">未完成</option>
+                        </select></label></li>
+                    </ul>
+                    <span class="text-c"><input name="" type="button" class="gray-btn m-r20 cancelBtn" value="取消"></input><input name="" type="button" class="orange-btn saveBtn" value="保存"></input></span>
+                </form>
             </div>
 		<!--内容结束-->
 

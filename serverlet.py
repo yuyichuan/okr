@@ -11,6 +11,7 @@ from l_model.KrUserOp import KrUserOpPy
 from l_model.KrUserGroupOp import KrUserGroupOpPy
 from l_model.KrOp import KrOpPy
 from l_model import PersistPool
+from l_model.KrMonthCheckOp import KrMonthCheckPy
 
 # session
 session_opts = {
@@ -130,6 +131,20 @@ def login():
     result['errmsg']="User name error or password error."
     return template("login", viewmodel=result)
 
+@route('/okrcheck', method='POST')
+def chkmonthokr():
+    s = bottle.request.environ.get('beaker.session')
+    if s and s.has_key('uid') and s['uid'] > 0 and hasgroup(s['groupids'], DEPARTMENT):
+        kid = request.params.get('kid')
+        checkMonth=request.params.get('checkMonth')
+        status=request.params.get('monthcheck')
+        conn = PersistPool.okrPool.getconn()
+        KrMonthCheckPy().saveMonthCheckOkr(conn, kid,checkMonth, status, s['uid'])
+        PersistPool.okrPool.putconn(conn)
+
+        return '{"status":0}'
+
+    return '{"status":-1,"errorMsg":"no permission!"}'
 
 @route('/okr')
 def okr():
