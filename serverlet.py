@@ -289,8 +289,11 @@ def personokr():
                     has = False
                     for subokr in subkrs:
                         if subokr['updatetime'] > datetime_before_week :
-                            subkrs_ret.append(subokr)
-                            has=True
+                            isme = False
+                            for us in subokr['link_users']:
+                                if us['uid'] == s['uid']:
+                                    subkrs_ret.append(subokr)
+                                    has=True
                     if has :
                         okr['krs'] = subkrs_ret
                         return_okrs.append(okr)
