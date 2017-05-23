@@ -12,6 +12,7 @@ from l_model.KrUserGroupOp import KrUserGroupOpPy
 from l_model.KrOp import KrOpPy
 from l_model import PersistPool
 from l_model.KrMonthCheckOp import KrMonthCheckPy
+from datetime import timedelta
 
 # session
 session_opts = {
@@ -269,9 +270,33 @@ def personokr():
         initUserInfo(result, s)
         result['curid'] = s['uid']
 
+        curweek = request.params.get('curweek')
+        result['curweek'] = '' if curweek is None else curweek
+
         conn = PersistPool.okrPool.getconn()
 
-        result['okrs'] = getokrs(conn, O_PERSON_LEVEL, s['uid'], result['selectmonth'])
+        tpokrs = getokrs(conn, O_PERSON_LEVEL, s['uid'], result['selectmonth'])
+
+        if curweek != 'curweek':
+            result['okrs'] = tpokrs
+        else:
+            return_okrs = []
+            datetime_before_week = datetime.today() + timedelta(-7)
+            for okr in tpokrs:
+                subkrs = okr['krs']
+                if len(subkrs) > 0 :
+                    subkrs_ret = []
+                    has = False
+                    for subokr in subkrs:
+                        if subokr['updatetime'] > datetime_before_week :
+                            subkrs_ret.append(subokr)
+                            has=True
+                    if has :
+                        okr['krs'] = subkrs_ret
+                        return_okrs.append(okr)
+
+            result['okrs'] = return_okrs
+
         allusers = []
         allusers.append(KrUserOpPy().getUser(conn, s['uid']))
         result['userscount'] = len(allusers)

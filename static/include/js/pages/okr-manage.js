@@ -470,9 +470,15 @@ define(function(require, exports, module) {
                     if ($('#showme').length > 0){
                         showmevar = '&showme='+($('#showme').is(':checked')?$('#showme').val():'')
                     }
+                    if ($('#curweek').length > 0){
+                        showmevar = showmevar + "&curweek=" + ($('#curweek').is(':checked')?$('#curweek').val():'')
+                    }
                     location.href = afterSaveUrl+'?selectmonth='+$('#selectmonth').val()+showmevar;
               }).on('click', '#showme', function(){
                     var showmevar = '&showme='+($('#showme').is(':checked')?$('#showme').val():'')
+                    location.href = afterSaveUrl+'?selectmonth='+$('#selectmonth').val()+showmevar;
+              }).on('click', '#curweek', function(){
+                    var showmevar = '&curweek='+($('#curweek').is(':checked')?$('#curweek').val():'')
                     location.href = afterSaveUrl+'?selectmonth='+$('#selectmonth').val()+showmevar;
               });
 

@@ -52,7 +52,11 @@
         <!--内容开始-->
         <input type="hidden" name="dispatcher" id="dispatcher" value="okr-manage" data-urlAfterSave="/personokr" data-urlDelete="/delokr">
         <div class="middle m-t30 cnt-title">
-        	<div class="w1k middle"><b>OKR管理</b>&nbsp;&nbsp;&nbsp;&nbsp;<select id="selectmonth">
+        	<div class="w1k middle"><b>OKR管理</b>&nbsp;&nbsp;&nbsp;&nbsp;<b>只显示一周内更新相关的O<input id="curweek" type="checkbox" value="curweek"
+        	            % if 'curweek' == viewmodel['curweek']:
+        	                checked="checked"
+        	            % end
+        	         ></b>&nbsp;&nbsp;&nbsp;&nbsp;<select id="selectmonth">
         	        <option value="">请选择月度</option>
         	            % for i in [1,2,3,4,5,6,7,8,9,10,11,12]:
         	                % if i == viewmodel['selectmonth']:
