@@ -88,7 +88,7 @@ input.orange-btn,button.orange-btn{line-height:normal;}
 .table-top-seach a{ display:inline-block; height:30px; width:30px; background:url(../img/seach-bg.gif) center center no-repeat; border:1px solid #d6d6d6; border-left:0; border-radius:0 2px 2px 0;}
 .table-top-seach a:hover{ background:url(../img/seach-bg2.gif) center center no-repeat;}
 .o-font{font-size:16px; margin-left:2px; font-family:Arial;}
-.okr-gl{ width:100%; overflow-x:auto; margin:0 auto;}
+.okr-gl{ width:100%; overflow-x:auto; margin:0 auto 20px;}
 .okr-gl table{ text-align:left;}
 .okr-gl table th,.okr-gl table td{ padding-left:10px;}
 .text-hidden{white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
@@ -123,3 +123,5 @@ input.orange-btn,button.orange-btn{line-height:normal;}
 .all-choose{ line-height:36px; background:#f5f5f5; padding:0 5px;}
 .all-choose input{ vertical-align:middle; margin-right:3px;}
 .all-choose cite{ padding-left:20px;}
+.select-style{ line-height:26px; height:26px;}
+.y-middle{vertical-align:middle;}
