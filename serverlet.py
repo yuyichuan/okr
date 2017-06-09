@@ -1,8 +1,8 @@
 __author__ = 'yuyc'
 
 import bottle
-import logging
 import logging.config
+import time
 from bottle import *
 from beaker.middleware import SessionMiddleware
 from decimal import Decimal
@@ -192,6 +192,8 @@ def showdepartmentokr():
         result['kolevel'] = O_DEPARTMENT_LEVEL
         result['krlevel'] = O_PROJECT_LEVEL
 
+        result['persondays'] = sumOkrsDaysPerson(result['okrs'])
+
         PersistPool.okrPool.putconn(conn)
 
         return template('okrshow', viewmodel=result)
@@ -255,6 +257,8 @@ def projectokr():
         result['kolevel'] = O_PROJECT_LEVEL
         result['krlevel'] = O_PERSON_LEVEL
 
+        result['persondays'] = sumOkrsDaysPerson(result['okrs'])
+
         PersistPool.okrPool.putconn(conn)
 
         return template('projectokr', viewmodel=result)
@@ -308,6 +312,8 @@ def personokr():
         result['krtype'] = PERSON
         result['kolevel'] = O_PERSON_LEVEL
         result['krlevel'] = O_PERSON_KR_LEVEL
+
+        result['persondays'] = sumOkrsDaysPerson(result['okrs'])
 
         PersistPool.okrPool.putconn(conn)
 
@@ -510,11 +516,15 @@ def formatlinkusers(okrlist):
 
 
 def getokrs(conn, okrlevel, uid, month):
-    okrs = KrOpPy().allOkr(conn, okrlevel, uid, month)
+    realMonth = month
+    if int(month) == -1:
+        realMonth = None
+
+    okrs = KrOpPy().allOkr(conn, okrlevel, uid, realMonth)
     formatlinkusers(okrs)
 
     for okr in okrs:
-        getSubOkrs(conn, okr, month)
+        getSubOkrs(conn, okr, realMonth)
 
     okrs.sort(cmp=lambda x, y: cmp(x['kid'], y['kid']))
     return okrs
@@ -538,6 +548,20 @@ def getokrswithoutdepartment(conn, month):
     getSubOkrs(conn, virtualokr, month)
 
     return virtualokr
+
+# result {'uname': days}
+def sumOkrsDaysPerson(okrs):
+    nn = flatSubOkrs2PersonLevel(okrs)
+    result = reduce(lambda x,y:(dict(x, **{y['link_users'][0]['uname']:x[y['link_users'][0]['uname']] + y['plandays']}) if y['link_users'][0]['uname'] in x else dict(x, **{y['link_users'][0]['uname']:y['plandays']})),
+                    flatSubOkrs2PersonLevel(okrs),
+                    {})
+    return result
+
+# [okra:[okrb:[okr1, okr2, ...], okrc:[okr3,okr4, ...],...], ...] => [okr1, okr2, okr3, okr4, ...]
+def flatSubOkrs2PersonLevel(okrs):
+    if okrs is None:
+        return []
+    return reduce(lambda x, y: (x + flatSubOkrs2PersonLevel(y['krs']) if int(y['klevel']) < O_PERSON_LEVEL else x+[y]), okrs, [])
 
 # 1--------
 # 2--------
@@ -581,7 +605,7 @@ def initUserInfo(result, s):
 
     # selectmonth
     selectmonth = request.params.get('selectmonth')
-    result['selectmonth'] = None if selectmonth is None or selectmonth == '' else int(selectmonth)
+    result['selectmonth'] = int(time.strftime('%m',time.localtime(time.time()))) if selectmonth is None or selectmonth == '' else int(selectmonth)
 
     return
 

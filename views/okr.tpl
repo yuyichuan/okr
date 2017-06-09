@@ -53,7 +53,7 @@
         <input type="hidden" name="dispatcher" id="dispatcher" value="okr-manage" data-urlAfterSave="/departmentokr" data-urlDelete="/delokr">
         <div class="middle m-t30 cnt-title">
         	<div class="w1k middle"><b>OKR管理</b>&nbsp;&nbsp;&nbsp;&nbsp;<select id="selectmonth">
-        	        <option value="">请选择月度</option>
+        	        <option value="-1">请选择月度</option>
         	            % for i in [1,2,3,4,5,6,7,8,9,10,11,12]:
         	                % if i == viewmodel['selectmonth']:
                                 <option value="{{i}}" selected="selected">{{i}}月</option>

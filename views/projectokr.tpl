@@ -56,7 +56,7 @@
         	            % if 'showme' == viewmodel['showme']:
         	                checked="checked"
         	            % end
-        	         ></b>&nbsp;&nbsp;&nbsp;&nbsp;<select id="selectmonth"><option value="">请选择月度</option>
+        	         ></b>&nbsp;&nbsp;&nbsp;&nbsp;<select id="selectmonth"><option value="-1">请选择月度</option>
         	            % for i in [1,2,3,4,5,6,7,8,9,10,11,12]:
         	                % if i == viewmodel['selectmonth']:
                                 <option value="{{i}}" selected="selected">{{i}}月</option>
@@ -81,6 +81,11 @@
                         <th width="13%">操作</th>
                     </thead>
                     <tbody>
+                    <tr><td colspan="10"><a href="javascript:;" class="showDetail">统计:
+                    % for (k,v) in viewmodel['persondays'].items():
+                        {{k}}:{{v}},
+                    % end
+                    </a></td></tr>
                     % for depto in viewmodel['okrs']:
                     	<tr id="{{depto['kid']}}">
                     	    <td>{{depto['kid']}}</td>
