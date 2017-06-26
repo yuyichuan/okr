@@ -568,7 +568,8 @@ def expandOkr(okr):
     resultList = []
     planDays = okr['plandays']
     for link_user in okr['link_users']:
-        link_users_new = [].append(link_user)
+        link_users_new = []
+        link_users_new.append(link_user)
         okr_new = {}
         okr_new['plandays'] = planDays
         okr_new['link_users'] = link_users_new
