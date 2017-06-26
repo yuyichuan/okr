@@ -561,7 +561,21 @@ def sumOkrsDaysPerson(okrs):
 def flatSubOkrs2PersonLevel(okrs):
     if okrs is None:
         return []
-    return reduce(lambda x, y: (x + flatSubOkrs2PersonLevel(y['krs']) if int(y['klevel']) < O_PERSON_LEVEL else x+[y]), okrs, [])
+    return reduce(lambda x, y: (x + flatSubOkrs2PersonLevel(y['krs']) if int(y['klevel']) < O_PERSON_LEVEL else x+expandOkr(y)), okrs, [])
+
+# expanding okr,  [okr['link_users']=[linkuser1, linkuser2, linkuser3,......]] => [okr['link_users']=[linkuser1], okr['link_users']=[linkuser2],okr['link_users']=[linkuser3],......]
+def expandOkr(okr):
+    resultList = []
+    planDays = okr['plandays']
+    for link_user in okr['link_users']:
+        link_users_new = [].append(link_user)
+        okr_new = {}
+        okr_new['plandays'] = planDays
+        okr_new['link_users'] = link_users_new
+        resultList.append(okr_new)
+
+    return resultList
+
 
 # 1--------
 # 2--------
