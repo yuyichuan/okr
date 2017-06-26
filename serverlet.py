@@ -551,7 +551,7 @@ def getokrswithoutdepartment(conn, month):
 
 # result {'uname': days}
 def sumOkrsDaysPerson(okrs):
-    nn = flatSubOkrs2PersonLevel(okrs)
+    # nn = flatSubOkrs2PersonLevel(okrs)
     result = reduce(lambda x,y:(dict(x, **{y['link_users'][0]['uname']:x[y['link_users'][0]['uname']] + y['plandays']}) if y['link_users'][0]['uname'] in x else dict(x, **{y['link_users'][0]['uname']:y['plandays']})),
                     flatSubOkrs2PersonLevel(okrs),
                     {})
